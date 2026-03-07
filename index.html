@@ -540,20 +540,61 @@
         </div>
       </div>
       <div>
-        <form id="reserva-form" onsubmit="handleReserva(event)">
-          <div class="form-group"><label>Nombre completo</label><input type="text" placeholder="Tu nombre" required></div>
-          <div class="form-group"><label>Número de teléfono</label><input type="tel" placeholder="+57 300 000 0000" required></div>
-          <div class="form-group"><label>Fecha del evento</label><input type="date" required></div>
-          <div class="form-group"><label>Tipo de servicio</label><select required><option value="">Seleccione un servicio</option><option>DJ Profesional</option><option>Fotografía</option><option>Show en vivo</option><option>Paquete completo</option></select></div>
-          <div class="form-group"><label>Mensaje personalizado</label><textarea placeholder="Cuéntanos sobre tu evento..."></textarea></div>
-          <div class="form-group"><label>Método de pago</label>
+        <form
+          id="reserva-form"
+          action="https://formspree.io/f/xjgakwly"
+          method="POST"
+        >
+          <div class="form-group">
+            <label>Nombre completo</label>
+            <input type="text" name="nombre" placeholder="Tu nombre" required>
+          </div>
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="email" name="email" placeholder="tucorreo@ejemplo.com" required>
+          </div>
+          <div class="form-group">
+            <label>Número de teléfono</label>
+            <input type="tel" name="telefono" placeholder="+57 300 000 0000" required>
+          </div>
+          <div class="form-group">
+            <label>Fecha del evento</label>
+            <input type="date" name="fecha" required>
+          </div>
+          <div class="form-group">
+            <label>Tipo de servicio</label>
+            <select name="servicio" required>
+              <option value="">Seleccione un servicio</option>
+              <option>DJ Profesional</option>
+              <option>Fotografía</option>
+              <option>Show en vivo</option>
+              <option>Paquete completo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mensaje personalizado</label>
+            <textarea name="message" placeholder="Cuéntanos sobre tu evento..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Método de pago</label>
             <div class="metodos-pago">
-              <div class="metodo"><input type="radio" name="pago" id="b1" checked><label for="b1">Bancolombia</label></div>
-              <div class="metodo"><input type="radio" name="pago" id="b2"><label for="b2">Efectivo</label></div>
+              <div class="metodo">
+                <input type="radio" name="metodo_pago" id="b1" value="Bancolombia" checked>
+                <label for="b1">Bancolombia</label>
+              </div>
+              <div class="metodo">
+                <input type="radio" name="metodo_pago" id="b2" value="Efectivo">
+                <label for="b2">Efectivo</label>
+              </div>
             </div>
           </div>
-          <div class="terminos"><input type="checkbox" id="tc" required><label for="tc">Acepto los términos y condiciones</label></div>
-          <button type="submit" class="btn-primary reserva-btn"><span>Reservar ahora →</span></button>
+          <div class="terminos">
+            <input type="checkbox" id="tc" name="terminos" value="acepto" required>
+            <label for="tc">Acepto los términos y condiciones</label>
+          </div>
+          <button type="submit" class="btn-primary reserva-btn">
+            <span>Reservar ahora →</span>
+          </button>
         </form>
         <div id="reserva-success" class="reserva-success hidden">
           <div class="success-check">✓</div>
