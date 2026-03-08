@@ -397,6 +397,22 @@
       position:relative;z-index:1;
     }
 
+    /* Botón mute/unmute del video */
+    .intro-mute-btn{
+      position:absolute;bottom:1rem;right:1rem;z-index:10;
+      width:44px;height:44px;
+      background:rgba(10,10,10,.85);border:1px solid var(--borde-rojo);
+      color:var(--texto-secundario);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:all var(--trans-media);
+      font-size:1.1rem;
+    }
+    .intro-mute-btn:hover{color:var(--blanco);border-color:var(--rojo);background:rgba(204,0,0,.2)}
+    .intro-mute-btn .icon-muted{display:none}
+    .intro-mute-btn .icon-unmuted{display:inline-block}
+    .intro-mute-btn.muted .icon-muted{display:inline-block}
+    .intro-mute-btn.muted .icon-unmuted{display:none}
+
     /* Estrellas decorativas */
     .intro-star{
       position:absolute;color:var(--rojo);pointer-events:none;
@@ -461,9 +477,13 @@
   </div>
 
   <div class="intro-video-wrap" id="intro-video-wrap">
-    <video autoplay muted loop playsinline id="intro-video">
+    <video autoplay muted playsinline id="intro-video">
       <source src="https://res.cloudinary.com/dgvfdirio/video/upload/v1772931823/03_mkautb.mp4" type="video/mp4">
     </video>
+    <button type="button" class="intro-mute-btn muted" id="intro-mute-btn" onclick="toggleIntroMute()" aria-label="Activar sonido">
+      <span class="icon-muted"><i class="fas fa-volume-mute"></i></span>
+      <span class="icon-unmuted"><i class="fas fa-volume-up"></i></span>
+    </button>
     <div class="intro-video-placeholder">
       <div class="play-icon">▶</div>
       <span>Agrega tu video aquí</span>
@@ -808,6 +828,10 @@
   if (introVideo && introWrap) {
     introVideo.addEventListener('canplay', function() { introWrap.classList.add('video-loaded'); });
     introVideo.addEventListener('error', function() { introWrap.classList.remove('video-loaded'); });
+    introVideo.addEventListener('ended', function() {
+      var overlay = document.getElementById('intro-overlay');
+      if (overlay && !overlay.classList.contains('fade-out')) closeIntro();
+    });
   }
 })();
 function handleIntroClose(ev){
@@ -821,6 +845,14 @@ function closeIntro(){
   if(!overlay) return;
   overlay.classList.add('fade-out');
   setTimeout(function(){ overlay.style.display='none'; }, 750);
+}
+function toggleIntroMute(){
+  var video = document.getElementById('intro-video');
+  var btn = document.getElementById('intro-mute-btn');
+  if(!video || !btn) return;
+  video.muted = !video.muted;
+  btn.classList.toggle('muted', video.muted);
+  btn.setAttribute('aria-label', video.muted ? 'Activar sonido' : 'Silenciar');
 }
 </script>
 <script>
