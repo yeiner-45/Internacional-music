@@ -115,13 +115,11 @@
     .portfolio-item{position:relative;overflow:hidden;cursor:none}
     .portfolio-item.featured{grid-column:span 2}
     .portfolio-item.hidden{display:none}
-    .bg-dj{background:linear-gradient(135deg,#1a0505 0%,#2d0000 100%)}
-    .bg-dj2{background:linear-gradient(135deg,#2a0000 0%,#0d0000 100%)}
-    .bg-foto{background:linear-gradient(135deg,#0a0a1a 0%,#12051f 100%)}
-    .bg-foto2{background:linear-gradient(135deg,#1a1505 0%,#2a1800 100%)}
-    .bg-show{background:linear-gradient(135deg,#0a0f0a 0%,#051205 100%)}
-    .bg-show2{background:linear-gradient(135deg,#0d0d0d 0%,#1a0a1a 100%)}
-    .portfolio-bg{position:absolute;inset:0;transition:transform var(--trans-lenta)}
+    .portfolio-bg{position:absolute;inset:0;transition:transform var(--trans-lenta);background-size:cover;background-position:center}
+    .portfolio-bg.img-04{background-image:url('assets/img/04.jpg')}
+    .portfolio-bg.img-06{background-image:url('assets/img/06.jpg')}
+    .portfolio-bg.img-07{background-image:url('assets/img/07.jpg')}
+    .portfolio-bg.img-08{background-image:url('assets/img/08.jpg')}
     .portfolio-item:hover .portfolio-bg{transform:scale(1.06)}
     .portfolio-deco{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fuente-titulo);font-size:4.5rem;letter-spacing:.1em;color:rgba(204,0,0,.07);pointer-events:none}
     .portfolio-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(10,10,10,.95) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem;opacity:0;transition:opacity var(--trans-media)}
@@ -568,12 +566,10 @@
       <button class="filtro" data-filter="show">Shows</button>
     </div>
     <div class="portfolio-grid">
-      <div class="portfolio-item featured" data-cat="dj"><div class="portfolio-bg bg-dj"></div><div class="portfolio-deco">DJ</div><div class="portfolio-overlay"><div class="portfolio-tag">DJ Set</div><div class="portfolio-title">Fiesta Corporativa</div><div class="portfolio-date">Diciembre 2024</div></div></div>
-      <div class="portfolio-item" data-cat="foto"><div class="portfolio-bg bg-foto"></div><div class="portfolio-deco">FOTO</div><div class="portfolio-overlay"><div class="portfolio-tag">Fotografía</div><div class="portfolio-title">Boda Ana & Carlos</div><div class="portfolio-date">Noviembre 2024</div></div></div>
-      <div class="portfolio-item" data-cat="show"><div class="portfolio-bg bg-show"></div><div class="portfolio-deco">SHOW</div><div class="portfolio-overlay"><div class="portfolio-tag">Show</div><div class="portfolio-title">Espectáculo de Luces</div><div class="portfolio-date">Octubre 2024</div></div></div>
-      <div class="portfolio-item" data-cat="foto"><div class="portfolio-bg bg-foto2"></div><div class="portfolio-deco">FOTO</div><div class="portfolio-overlay"><div class="portfolio-tag">Fotografía</div><div class="portfolio-title">15 Años de Valentina</div><div class="portfolio-date">Septiembre 2024</div></div></div>
-      <div class="portfolio-item" data-cat="dj"><div class="portfolio-bg bg-dj2"></div><div class="portfolio-deco">DJ</div><div class="portfolio-overlay"><div class="portfolio-tag">DJ Set</div><div class="portfolio-title">Festival Universitario</div><div class="portfolio-date">Agosto 2024</div></div></div>
-      <div class="portfolio-item" data-cat="show"><div class="portfolio-bg bg-show2"></div><div class="portfolio-deco">SHOW</div><div class="portfolio-overlay"><div class="portfolio-tag">Show</div><div class="portfolio-title">Evento Corporativo</div><div class="portfolio-date">Julio 2024</div></div></div>
+      <div class="portfolio-item featured" data-cat="todos"><div class="portfolio-bg img-04"></div><div class="portfolio-deco">DJ</div><div class="portfolio-overlay"><div class="portfolio-tag">Eventos</div><div class="portfolio-title">Internacional Music</div><div class="portfolio-date">2024</div></div></div>
+      <div class="portfolio-item" data-cat="todos"><div class="portfolio-bg img-06"></div><div class="portfolio-deco">FOTO</div><div class="portfolio-overlay"><div class="portfolio-tag">Fotografía</div><div class="portfolio-title">Momentos únicos</div><div class="portfolio-date">2024</div></div></div>
+      <div class="portfolio-item" data-cat="todos"><div class="portfolio-bg img-07"></div><div class="portfolio-deco">SHOW</div><div class="portfolio-overlay"><div class="portfolio-tag">Shows</div><div class="portfolio-title">Espectáculos</div><div class="portfolio-date">2024</div></div></div>
+      <div class="portfolio-item" data-cat="todos"><div class="portfolio-bg img-08"></div><div class="portfolio-deco">EVENTOS</div><div class="portfolio-overlay"><div class="portfolio-tag">Eventos</div><div class="portfolio-title">Internacional Music</div><div class="portfolio-date">2024</div></div></div>
     </div>
   </section>
 </div>
