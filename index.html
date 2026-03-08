@@ -90,15 +90,20 @@
     .servicios-section{padding:8rem 4rem}
     .servicios-header{margin-bottom:4rem}
     .servicios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--borde-rojo);border:1px solid var(--borde-rojo)}
-    .servicio-card{background:var(--negro);padding:3rem;position:relative;overflow:hidden;transition:background var(--trans-media)}
-    .servicio-card:hover{background:var(--gris-oscuro)}
+    .servicio-card{position:relative;overflow:hidden;background:var(--negro);min-height:260px}
+    .servicio-bg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02);transition:transform var(--trans-lenta),filter var(--trans-media)}
+    .servicio-card:hover .servicio-bg{transform:scale(1.06);filter:brightness(.6)}
+    .servicio-content{position:relative;z-index:1;padding:3rem;display:flex;flex-direction:column;justify-content:flex-end;height:100%;background:linear-gradient(180deg,transparent 30%,rgba(10,10,10,.9) 100%);opacity:0;transform:translateY(10px);transition:opacity var(--trans-media),transform var(--trans-media)}
+    .servicio-card:hover .servicio-content{opacity:1;transform:translateY(0)}
     .servicio-line{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--rojo);transform:scaleX(0);transition:transform var(--trans-media)}
     .servicio-card:hover .servicio-line{transform:scaleX(1)}
-    .servicio-num{font-family:var(--fuente-titulo);font-size:5rem;color:rgba(204,0,0,.08);line-height:1;margin-bottom:1rem;transition:color var(--trans-media)}
-    .servicio-card:hover .servicio-num{color:rgba(204,0,0,.22)}
+    .servicio-num{font-family:var(--fuente-titulo);font-size:5rem;color:rgba(204,0,0,.2);line-height:1;margin-bottom:1rem}
     .servicio-icon{position:absolute;top:2rem;right:2rem;width:40px;height:40px;border:1px solid var(--borde-rojo);display:flex;align-items:center;justify-content:center;color:var(--rojo);font-size:1.2rem}
     .servicio-card h3{font-family:var(--fuente-titulo);font-size:2rem;letter-spacing:.05em;margin-bottom:1rem}
     .servicio-card p{color:var(--texto-secundario);line-height:1.75;font-size:.88rem}
+    .servicio-dj .servicio-bg{background-image:url('assets/img/13.png')}
+    .servicio-foto .servicio-bg{background-image:url('assets/img/11.png')}
+    .servicio-show .servicio-bg{background-image:url('assets/img/06.jpg')}
 
     /* PORTAFOLIO */
     .portafolio-section{padding:10rem 4rem 8rem;background:var(--gris-oscuro);min-height:100vh}
@@ -497,9 +502,36 @@
   <section class="servicios-section">
     <div class="servicios-header"><p class="section-label">Lo que hacemos</p><div class="red-divider"></div><h2 class="section-title">NUESTROS<br>SERVICIOS</h2></div>
     <div class="servicios-grid">
-      <div class="servicio-card"><div class="servicio-num">01</div><div class="servicio-icon">♫</div><h3>DJ Profesional</h3><p>Mezclas dinámicas y personalizadas para mantener la energía de tu evento al máximo nivel.</p><div class="servicio-line"></div></div>
-      <div class="servicio-card"><div class="servicio-num">02</div><div class="servicio-icon">◎</div><h3>Fotografía</h3><p>Capturamos los momentos más especiales con un enfoque artístico y profesional que perdura.</p><div class="servicio-line"></div></div>
-      <div class="servicio-card"><div class="servicio-num">03</div><div class="servicio-icon">★</div><h3>Shows en Vivo</h3><p>Espectáculos que harán de tu evento algo verdaderamente memorable e irrepetible.</p><div class="servicio-line"></div></div>
+      <div class="servicio-card servicio-dj">
+        <div class="servicio-bg"></div>
+        <div class="servicio-content">
+          <div class="servicio-num">01</div>
+          <div class="servicio-icon">♫</div>
+          <h3>DJ Profesional</h3>
+          <p>Mezclas dinámicas y personalizadas para mantener la energía de tu evento al máximo nivel.</p>
+        </div>
+        <div class="servicio-line"></div>
+      </div>
+      <div class="servicio-card servicio-foto">
+        <div class="servicio-bg"></div>
+        <div class="servicio-content">
+          <div class="servicio-num">02</div>
+          <div class="servicio-icon">◎</div>
+          <h3>Fotografía</h3>
+          <p>Capturamos los momentos más especiales con un enfoque artístico y profesional que perdura.</p>
+        </div>
+        <div class="servicio-line"></div>
+      </div>
+      <div class="servicio-card servicio-show">
+        <div class="servicio-bg"></div>
+        <div class="servicio-content">
+          <div class="servicio-num">03</div>
+          <div class="servicio-icon">★</div>
+          <h3>Shows en Vivo</h3>
+          <p>Espectáculos que harán de tu evento algo verdaderamente memorable e irrepetible.</p>
+        </div>
+        <div class="servicio-line"></div>
+      </div>
     </div>
   </section>
 </div>
@@ -784,7 +816,7 @@ function closeIntro(){
   setTimeout(function(){ overlay.style.display='none'; }, 750);
 }
 </script>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 function showPage(name){
   document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');p.style.display='none'});
   const t=document.getElementById('page-'+name);
