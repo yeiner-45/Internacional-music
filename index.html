@@ -492,7 +492,7 @@
   <div class="intro-video-wrap" id="intro-video-wrap">
     <video autoplay muted playsinline id="intro-video" poster="assets/img/04.jpg">
       <source src="https://res.cloudinary.com/dgvfdirio/video/upload/v1773010611/01_rfudda.webm" type="video/webm">
-      <source src="https://res.cloudinary.com/dgvfdirio/video/upload/v1773010611/01_rfudda.mp4" type="video/mp4">
+      
     </video>
     <button type="button" class="intro-mute-btn muted" id="intro-mute-btn" onclick="toggleIntroMute()" aria-label="Activar sonido">
       <span class="icon-muted"><i class="fas fa-volume-mute"></i></span>
@@ -500,7 +500,7 @@
     </button>
     <div class="intro-video-placeholder">
       <div class="play-icon">▶</div>
-      <span>Agrega tu video aquí</span>
+      <span>video aqui </span>
     </div>
   </div>
 
@@ -921,6 +921,12 @@ function closeIntro(){
   clearInterval(window._introTimer);
   window._introTimer = null;
   var overlay = document.getElementById('intro-overlay');
+  var video = document.getElementById('intro-video');
+  if(video){
+    video.pause();
+    video.currentTime = 0;
+    video.muted = true;
+  }
   if(!overlay) return;
   overlay.classList.add('fade-out');
   setTimeout(function(){ overlay.style.display='none'; }, 750);
