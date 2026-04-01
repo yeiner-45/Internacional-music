@@ -63,6 +63,7 @@
     .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.7rem}
     .footer-col ul a{color:var(--texto-secundario);text-decoration:none;font-size:.85rem;cursor:none;transition:color var(--trans-media)}
     .footer-col ul a:hover{color:var(--rojo)}
+    .footer-col .footer-address{color:var(--texto-secundario);font-size:.85rem;line-height:1.5}
     .footer-bottom{border-top:1px solid var(--gris-suave);padding-top:2rem;display:flex;justify-content:space-between;align-items:center;color:var(--texto-apagado);font-size:.75rem}
     .footer-bottom .red{color:var(--rojo)}
     .footer-social{margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap}
@@ -142,6 +143,8 @@
     .reserva-desc{color:var(--texto-secundario);line-height:1.85;margin-bottom:3rem;font-size:.95rem}
     .contact-info{display:flex;flex-direction:column;gap:1rem}
     .contact-item{display:flex;gap:1rem;align-items:center;font-size:.88rem;color:var(--texto-secundario)}
+    .contact-item a{color:var(--texto-secundario);text-decoration:none;transition:color var(--trans-media)}
+    .contact-item a:hover{color:var(--rojo)}
     .contact-dot{width:6px;height:6px;background:var(--rojo);border-radius:50%;flex-shrink:0}
     #reserva-form{display:flex;flex-direction:column;gap:1.5rem}
     .metodos-pago{display:flex;gap:1rem}
@@ -675,8 +678,8 @@
         <h2 class="section-title">RESERVA<br>AHORA</h2>
         <p class="reserva-desc">Contáctanos y haremos de tu evento una experiencia que nadie olvidará. Respondemos en menos de 24 horas.</p>
         <div class="contact-info">
-          <div class="contact-item"><div class="contact-dot"></div><span>info@Internacional Music.co</span></div>
-          <div class="contact-item"><div class="contact-dot"></div><span>+57 301 777 1649</span></div>
+          <div class="contact-item"><div class="contact-dot"></div><a href="mailto:contacto@internacionalmusic.com">contacto@internacionalmusic.com</a></div>
+          <div class="contact-item"><div class="contact-dot"></div><a href="tel:+573017771649">+57 301 777 1649</a></div>
           <div class="contact-item"><div class="contact-dot"></div><span>Taraza-Antioquia, Colombia</span></div>
         </div>
       </div>
@@ -758,7 +761,7 @@
       <form id="login-form" onsubmit="handleLogin(event)">
         <div class="form-group">
           <label>Correo electrónico</label>
-          <input type="email" name="email" placeholder="admin@internacionalmusic.co" required>
+          <input type="email" name="email" placeholder="contacto@internacionalmusic.com" required>
         </div>
         <div class="form-group">
           <label>Contraseña</label>
@@ -826,7 +829,7 @@
             <h4 class="config-card-title">Configuración de la cuenta</h4>
             <form style="display:flex;flex-direction:column;gap:1rem;">
               <div class="form-group"><label>Usuario</label><input type="text" placeholder="admin"></div>
-              <div class="form-group"><label>Correo</label><input type="email" placeholder="admin@sinergia.co"></div>
+              <div class="form-group"><label>Correo</label><input type="email" placeholder="contacto@internacionalmusic.com"></div>
               <div class="form-group"><label>Contraseña actual</label><input type="password"></div>
               <div class="form-group"><label>Nueva contraseña</label><input type="password"></div>
               <button type="button" class="btn-primary"><span>Guardar cambios</span></button>
@@ -860,7 +863,7 @@
     </div>
     <div class="footer-col"><h4>Servicios</h4><ul><li><a href="#">DJ Profesional</a></li><li><a href="#">Fotografía</a></li><li><a href="#">Shows en vivo</a></li></ul></div>
     <div class="footer-col"><h4>Empresa</h4><ul><li><a href="#">Sobre nosotros</a></li><li><a href="#" onclick="showPage('portafolio');return false">Portafolio</a></li><li><a href="#">Testimonios</a></li></ul></div>
-    <div class="footer-col"><h4>Contacto</h4><ul><li><a href="/cdn-cgi/l/email-protection#51383f373e1122383f34233638307f323e">info@Internacional Music.co</a></li><li><a href="#">+57 301 777 1649</a></li><li><a href="#">Taraza-Antioquia, Colombia</a></li></ul></div>
+    <div class="footer-col"><h4>Contacto</h4><ul><li><a href="mailto:contacto@internacionalmusic.com">contacto@internacionalmusic.com</a></li><li><a href="tel:+573017771649">+57 301 777 1649</a></li><li><span class="footer-address">Taraza-Antioquia, Colombia</span></li></ul></div>
   </div>
   <div class="footer-bottom"><span>© 2026 <span class="red">Internacional Music</span>. Todos los derechos reservados.</span><span>Internacional Music</span></div>
 </footer>
@@ -997,7 +1000,7 @@ function handleLogin(e){
   if(errorBox) errorBox.textContent='';
   var email = emailInput ? emailInput.value.trim() : '';
   var password = passInput ? passInput.value.trim() : '';
-  var validEmail = 'admin@internacionalmusic.co';
+  var validEmail = 'contacto@internacionalmusic.com';
   var validPassword = 'Taraza2026!';
   if(email.toLowerCase()===validEmail && password===validPassword){
     try{
