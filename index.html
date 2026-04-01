@@ -761,11 +761,11 @@
       <form id="login-form" onsubmit="handleLogin(event)">
         <div class="form-group">
           <label>Correo electrónico</label>
-          <input type="email" name="email" placeholder="contacto@internacionalmusic.com" required>
+          <input type="email" name="email" placeholder="usuario@ejemplo.com" required autocomplete="username">
         </div>
         <div class="form-group">
           <label>Contraseña</label>
-          <input type="password" name="password" placeholder="••••••••" required>
+          <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
         </div>
         <div class="login-extras">
           <label class="remember-me"><input type="checkbox"> Recordarme</label>
@@ -837,7 +837,7 @@
           </div>
           <div class="config-card">
             <h4 class="config-card-title">Integraciones</h4>
-            <div class="integracion-item"><div class="integracion-header"><strong>Stripe</strong><span class="integracion-desc">Pagos con tarjeta</span></div><div class="form-group"><label>API Key</label><input type="password" placeholder="sk_live_..."></div></div>
+            <div class="integracion-item"><div class="integracion-header"><strong>Stripe</strong><span class="integracion-desc">Pagos con tarjeta</span></div><div class="form-group"><label>API Key</label><input type="password" placeholder="Solo en servidor / entorno seguro" autocomplete="off"></div></div>
             <div class="integracion-item"><div class="integracion-header"><strong>Amazon S3</strong><span class="integracion-desc">Almacenamiento en la nube</span></div><div class="form-group"><label>Bucket</label><input type="text" placeholder="sinergia-media"></div></div>
             <div class="integracion-item"><div class="integracion-header"><strong>Email SMTP</strong><span class="integracion-desc">Correos automatizados</span></div><div class="form-group"><label>Servidor</label><input type="text" placeholder="smtp.tudominio.co"></div></div>
             <button type="button" class="btn-primary" style="margin-top:1rem;"><span>Guardar configuraciones</span></button>
@@ -994,26 +994,16 @@ function showPage(name){
 function handleLogin(e){
   e.preventDefault();
   var form = e.target;
-  var emailInput = form.querySelector('input[name="email"]');
   var passInput = form.querySelector('input[name="password"]');
   var errorBox = document.getElementById('login-error');
-  if(errorBox) errorBox.textContent='';
-  var email = emailInput ? emailInput.value.trim() : '';
-  var password = passInput ? passInput.value.trim() : '';
-  var validEmail = 'contacto@internacionalmusic.com';
-  var validPassword = 'Taraza2026!';
-  if(email.toLowerCase()===validEmail && password===validPassword){
-    try{
-      localStorage.setItem('adminLoggedIn','true');
-      localStorage.setItem('currentPage','admin');
-    }catch(e){}
-    showPage('admin');
-  }else{
-    if(errorBox){
-      errorBox.textContent='Credenciales inválidas. Verifica el correo y la contraseña.';
-    }
-    if(passInput) passInput.value='';
+  if(errorBox){
+    errorBox.textContent='El acceso al panel debe configurarse con autenticación en servidor (por ejemplo API o proveedor OAuth). En el código público del sitio no se guardan contraseñas ni credenciales.';
   }
+  if(passInput) passInput.value='';
+  try{
+    localStorage.removeItem('adminLoggedIn');
+    localStorage.setItem('currentPage','acceso');
+  }catch(err){}
 }
 function handleLogout(){
   try{
@@ -1087,6 +1077,7 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
 (function initPageFromStorage(){
   var initial='inicio';
   try{
+    localStorage.removeItem('adminLoggedIn');
     var stored=localStorage.getItem('currentPage');
     var isAdminLogged=localStorage.getItem('adminLoggedIn')==='true';
     if(stored){
