@@ -6,6 +6,8 @@
   <title>Internacional Music | Eventos, DJ y Fotografía en Tarazá y Caucasia</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/locales-all.global.min.js"></script>
   <style>
     :root {
       --negro:#0a0a0a; --rojo:#cc0000; --rojo-brillante:#ff1a1a; --blanco:#f5f5f5;
@@ -138,7 +140,7 @@
 
     /* RESERVA */
     .reserva-section{padding:10rem 4rem 8rem;min-height:100vh}
-    .reserva-inner{display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+    .reserva-inner{display:grid;grid-template-columns:1fr 1fr;gap:4rem 3rem;align-items:start}
     .reserva-left .section-title{margin-bottom:1.5rem}
     .reserva-desc{color:var(--texto-secundario);line-height:1.85;margin-bottom:3rem;font-size:.95rem}
     .contact-info{display:flex;flex-direction:column;gap:1rem}
@@ -146,22 +148,7 @@
     .contact-item a{color:var(--texto-secundario);text-decoration:none;transition:color var(--trans-media)}
     .contact-item a:hover{color:var(--rojo)}
     .contact-dot{width:6px;height:6px;background:var(--rojo);border-radius:50%;flex-shrink:0}
-    #reserva-form{display:flex;flex-direction:column;gap:1.5rem}
-    .metodos-pago{display:flex;gap:1rem}
-    .metodo{flex:1;padding:1rem;background:var(--gris-oscuro);border:1px solid var(--borde-blanco);display:flex;align-items:center;gap:.75rem;cursor:none;transition:border-color var(--trans-media)}
-    .metodo:has(input:checked){border-color:var(--rojo);background:rgba(204,0,0,.07)}
-    .metodo input[type=radio]{accent-color:var(--rojo);cursor:none}
-    .metodo label{font-size:.85rem;cursor:none}
-    .terminos{display:flex;align-items:center;gap:.75rem;font-size:.8rem;color:var(--texto-apagado)}
-    .terminos input{accent-color:var(--rojo);cursor:none}
-    .reserva-btn{width:100%;padding:1.1rem;font-size:.82rem}
-    .reserva-success{text-align:center;padding:3.5rem 2rem;background:var(--gris-oscuro);border:1px solid var(--borde-rojo);animation:fadeSlideIn .5s ease both}
-    .reserva-success.hidden{display:none}
-    @keyframes fadeSlideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    .success-check{width:56px;height:56px;border:2px solid var(--rojo);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--rojo);margin:0 auto 1.5rem}
-    .reserva-success h3{font-family:var(--fuente-titulo);font-size:2rem;color:var(--blanco);margin-bottom:.75rem}
-    .reserva-success p{color:var(--texto-secundario);font-size:.88rem;margin-bottom:.5rem}
-    .ref-code{color:var(--rojo);font-weight:600}
+    .reserva-right{width:100%;min-width:0}
 
     /* ACCESO */
     .acceso-section{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem;background:radial-gradient(ellipse at 50% 40%,rgba(204,0,0,.08) 0%,transparent 65%),var(--negro)}
@@ -462,6 +449,93 @@
     }
     .wa-float:focus-visible{outline:2px solid var(--blanco);outline-offset:3px}
 
+    /* Calendario + formulario (reserva, rojo marca) */
+    .reservas-fc-inner{
+      display:flex;flex-wrap:wrap;align-items:flex-start;gap:2rem;
+      width:100%;
+    }
+    .reservas-fc-calendar-wrap{
+      flex:1 1 60%;min-width:280px;
+      max-width:100%;
+    }
+    #calendar{
+      width:100%;min-height:420px;
+      padding:1rem;
+      background:#0d0d0d;
+      border:1px solid var(--borde-rojo);
+      border-radius:4px;
+      box-shadow:0 0 0 1px rgba(204,0,0,.12) inset;
+    }
+    #calendar .fc{
+      --fc-border-color:rgba(204,0,0,.35);
+      --fc-page-bg-color:#0d0d0d;
+      --fc-neutral-bg-color:#141414;
+      --fc-neutral-text-color:rgba(245,245,245,.65);
+      --fc-today-bg-color:rgba(204,0,0,.12);
+      --fc-now-indicator-color:var(--rojo);
+      --fc-button-text-color:var(--blanco);
+      --fc-button-bg-color:transparent;
+      --fc-button-border-color:var(--rojo);
+      --fc-button-hover-bg-color:rgba(204,0,0,.12);
+      --fc-button-hover-border-color:var(--rojo-brillante);
+      --fc-button-active-bg-color:rgba(204,0,0,.2);
+      --fc-list-event-hover-bg-color:#1a1a1a;
+    }
+    #calendar .fc .fc-toolbar-title{color:var(--blanco);font-family:var(--fuente-titulo);letter-spacing:.06em;font-size:1.35rem}
+    #calendar .fc .fc-col-header-cell-cushion,#calendar .fc .fc-daygrid-day-number{color:rgba(245,245,245,.88)}
+    #calendar .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{color:var(--rojo-brillante);font-weight:600}
+    .reservas-fc-form-wrap{
+      flex:1 1 calc(40% - 2rem);min-width:280px;
+      max-width:100%;
+    }
+    .reservas-fc-form{
+      display:flex;flex-direction:column;gap:1.1rem;
+      padding:1.75rem;
+      background:#0d0d0d;
+      border:1px solid var(--borde-rojo);
+      border-radius:4px;
+      box-shadow:0 0 0 1px rgba(204,0,0,.08) inset;
+    }
+    .reservas-fc-form h3{
+      font-family:var(--fuente-titulo);font-size:1.5rem;letter-spacing:.08em;color:var(--blanco);margin-bottom:.25rem;
+    }
+    .reservas-fc-form .form-group label{
+      font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(245,245,245,.55);font-weight:400;
+    }
+    .reservas-fc-form .form-group input,
+    .reservas-fc-form .form-group select{
+      background:#121212;border:1px solid var(--borde-rojo);color:var(--blanco);
+      padding:.85rem 1rem;font-family:var(--fuente-cuerpo);font-size:.9rem;outline:none;width:100%;
+      transition:border-color var(--trans-rapida),box-shadow var(--trans-rapida);
+    }
+    .reservas-fc-form .form-group input:focus,
+    .reservas-fc-form .form-group select:focus{
+      border-color:var(--rojo);box-shadow:0 0 0 1px rgba(204,0,0,.25);
+    }
+    .reservas-fc-form .form-group input::placeholder{color:rgba(245,245,245,.3)}
+    .reservas-wa-row{
+      display:flex;align-items:stretch;gap:0;border:1px solid var(--borde-rojo);border-radius:2px;overflow:hidden;background:#121212;
+    }
+    .reservas-wa-row:focus-within{border-color:var(--rojo);box-shadow:0 0 0 1px rgba(204,0,0,.25)}
+    .reservas-wa-fix{
+      flex-shrink:0;display:flex;align-items:center;padding:0 .85rem;
+      background:rgba(204,0,0,.12);color:var(--rojo-brillante);font-size:.9rem;font-weight:600;letter-spacing:.02em;
+      border-right:1px solid var(--borde-rojo);
+    }
+    .reservas-wa-row input{
+      border:none !important;box-shadow:none !important;border-radius:0 !important;flex:1;min-width:0;
+    }
+    .reservas-fc-form .btn-reservas-fc{
+      margin-top:.5rem;display:inline-block;text-align:center;width:100%;
+      background:var(--rojo);color:var(--blanco);border:1px solid var(--rojo);
+      padding:1rem 1.5rem;font-family:var(--fuente-cuerpo);font-size:.78rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+      cursor:pointer;transition:background var(--trans-media),box-shadow var(--trans-media);
+    }
+    .reservas-fc-form .btn-reservas-fc:hover{
+      background:var(--rojo-brillante);border-color:var(--rojo-brillante);box-shadow:0 4px 24px rgba(204,0,0,.25);
+    }
+    .reservas-fc-form .reservas-fc-hint{font-size:.72rem;color:rgba(245,245,245,.4);margin-top:-.35rem}
+
     @media(max-width:900px){
       #navbar{padding:1rem 1.5rem} #navbar ul{gap:1.5rem}
       .servicios-grid,.portfolio-grid,.reserva-inner,.footer-inner,.config-grid{grid-template-columns:1fr}
@@ -469,6 +543,8 @@
       .servicios-section,.portafolio-section,.reserva-section{padding:7rem 1.5rem 5rem}
       .admin-layout{grid-template-columns:1fr} .admin-sidebar{height:auto;position:static}
       #footer{padding:3rem 1.5rem} .footer-inner{grid-template-columns:1fr 1fr}
+      .reservas-fc-inner{flex-direction:column}
+      .reservas-fc-calendar-wrap,.reservas-fc-form-wrap{flex:1 1 100%;width:100%}
     }
   </style>
 </head>
@@ -683,69 +759,48 @@
           <div class="contact-item"><div class="contact-dot"></div><span>Taraza-Antioquia, Colombia</span></div>
         </div>
       </div>
-      <div>
-        <form
-          id="reserva-form"
-          action="https://formspree.io/f/xjgakwly"
-          method="POST"
-        >
-          <div class="form-group">
-            <label>Nombre completo</label>
-            <input type="text" name="nombre" placeholder="Tu nombre" required>
+      <div class="reserva-right">
+        <p class="section-label" style="margin-bottom:.75rem">Elige fecha y envía tu solicitud</p>
+        <div class="red-divider" style="margin-bottom:1.25rem"></div>
+        <div class="reservas-fc-inner">
+          <div class="reservas-fc-calendar-wrap">
+            <div id="calendar"></div>
           </div>
-          <div class="form-group">
-            <label>Correo electrónico</label>
-            <input type="email" name="email" placeholder="tucorreo@ejemplo.com" required>
-          </div>
-          <div class="form-group">
-            <label>Número de teléfono</label>
-            <input type="tel" name="telefono" placeholder="+57 300 000 0000" required>
-          </div>
-          <div class="form-group">
-            <label>Fecha del evento</label>
-            <input type="date" name="fecha" required>
-          </div>
-          <div class="form-group">
-            <label>Tipo de servicio</label>
-            <select name="servicio" required>
-              <option value="">Seleccione un servicio</option>
-              <option>DJ Profesional</option>
-              <option>Fotografía</option>
-              <option>Show en vivo</option>
-              <option>Paquete completo</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Mensaje personalizado</label>
-            <textarea name="message" placeholder="Cuéntanos sobre tu evento..." required></textarea>
-          </div>
-          <div class="form-group">
-            <label>Método de pago</label>
-            <div class="metodos-pago">
-              <div class="metodo">
-                <input type="radio" name="metodo_pago" id="b1" value="Bancolombia" checked>
-                <label for="b1">Bancolombia</label>
+          <div class="reservas-fc-form-wrap">
+            <form class="reservas-fc-form" id="form-reservas-fc" action="https://formspree.io/f/xjgakwly" method="POST">
+              <input type="hidden" name="_subject" value="Nueva solicitud — Reservas Internacional Music">
+              <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;height:0;width:0" aria-hidden="true">
+              <h3>Solicitud de evento</h3>
+              <div class="form-group">
+                <label for="reservas-nombre">Nombre completo</label>
+                <input type="text" id="reservas-nombre" name="nombre" required placeholder="Nombre y apellido" autocomplete="name">
               </div>
-              <div class="metodo">
-                <input type="radio" name="metodo_pago" id="b2" value="Efectivo">
-                <label for="b2">Efectivo</label>
+              <div class="form-group">
+                <label for="reservas-whatsapp-visible">WhatsApp</label>
+                <div class="reservas-wa-row">
+                  <span class="reservas-wa-fix">+57</span>
+                  <input type="tel" id="reservas-whatsapp-visible" required inputmode="numeric" placeholder="300 000 0000" autocomplete="tel">
+                </div>
+                <input type="hidden" name="whatsapp" id="reservas-whatsapp-hidden" value="">
+                <p class="reservas-fc-hint">Número móvil colombiano (se enviará con prefijo +57).</p>
               </div>
-            </div>
+              <div class="form-group">
+                <label for="reservas-tipo">Tipo de evento</label>
+                <select id="reservas-tipo" name="tipo_evento" required>
+                  <option value="">Seleccione una opción</option>
+                  <option value="Boda">Boda</option>
+                  <option value="Grado">Grado</option>
+                  <option value="Fiesta Privada">Fiesta Privada</option>
+                  <option value="Publicidad">Publicidad</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="reservas-fecha">Fecha del evento</label>
+                <input type="date" id="reservas-fecha" name="fecha_evento" required>
+              </div>
+              <button type="submit" class="btn-reservas-fc"><span>Enviar solicitud</span></button>
+            </form>
           </div>
-          <div class="terminos">
-            <input type="checkbox" id="tc" name="terminos" value="acepto" required>
-            <label for="tc">Acepto los términos y condiciones</label>
-          </div>
-          <button type="submit" class="btn-primary reserva-btn">
-            <span>Reservar ahora →</span>
-          </button>
-        </form>
-        <div id="reserva-success" class="reserva-success hidden">
-          <div class="success-check">✓</div>
-          <h3>¡Reserva recibida!</h3>
-          <p>Hemos enviado un correo con los detalles de tu reserva.</p>
-          <p>Referencia: <span id="ref-num" class="ref-code"></span></p>
-          <button onclick="showPage('inicio')" style="background:none;border:none;color:var(--texto-secundario);cursor:none;margin-top:1.5rem;font-family:var(--fuente-cuerpo);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;border-bottom:1px solid var(--borde-blanco);padding-bottom:3px;">← Volver al inicio</button>
         </div>
       </div>
     </div>
@@ -987,6 +1042,11 @@ function showPage(name){
   if(footer) footer.style.display=isAdmin?'none':'block';
   if(navbar) navbar.style.display=isAdmin?'none':'flex';
   window.scrollTo({top:0,behavior:'smooth'});
+  if(requested==='reserva' && window._fcReservaCalendar){
+    requestAnimationFrame(function(){
+      try{ window._fcReservaCalendar.updateSize(); }catch(e){}
+    });
+  }
   try{
     localStorage.setItem('currentPage',requested);
   }catch(e){}
@@ -1011,12 +1071,6 @@ function handleLogout(){
     localStorage.setItem('currentPage','inicio');
   }catch(e){}
   showPage('inicio');
-}
-function handleReserva(e){
-  e.preventDefault();
-  document.getElementById('ref-num').textContent='SIN-'+Math.random().toString(36).substr(2,8).toUpperCase();
-  document.getElementById('reserva-form').style.display='none';
-  document.getElementById('reserva-success').classList.remove('hidden');
 }
 const TITLES={reservas:'GESTIÓN DE RESERVAS',archivos:'ADMINISTRACIÓN DE ARCHIVOS','portafolio-admin':'GESTIÓN DE PORTAFOLIO',config:'CONFIGURACIONES'};
 function switchAdminTab(tab,el){
@@ -1091,6 +1145,62 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
     initial='inicio';
   }
   showPage(initial);
+})();
+</script>
+<script>
+(function initReservasCalendar(){
+  document.addEventListener('DOMContentLoaded', function(){
+    var calEl = document.getElementById('calendar');
+    if (!calEl || typeof FullCalendar === 'undefined') return;
+
+    var fechaInput = document.getElementById('reservas-fecha');
+    if (fechaInput) {
+      var t = new Date();
+      fechaInput.min = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+    }
+
+    var calendar = new FullCalendar.Calendar(calEl, {
+      initialView: 'dayGridMonth',
+      locale: 'es',
+      initialDate: new Date(),
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: ''
+      },
+      height: 'auto',
+      fixedWeekCount: false,
+      dateClick: function(info){
+        if (fechaInput) fechaInput.value = info.dateStr;
+      }
+    });
+    calendar.render();
+    window._fcReservaCalendar = calendar;
+
+    if (fechaInput) {
+      fechaInput.addEventListener('change', function(){
+        if (this.value) calendar.gotoDate(this.value);
+      });
+    }
+
+    var form = document.getElementById('form-reservas-fc');
+    if (form) {
+      form.addEventListener('submit', function(e){
+        var vis = document.getElementById('reservas-whatsapp-visible');
+        var hid = document.getElementById('reservas-whatsapp-hidden');
+        if (!vis || !hid) return;
+        var digits = vis.value.replace(/\D/g, '');
+        if (digits.indexOf('57') === 0) digits = digits.substring(2);
+        if (digits.length < 10) {
+          e.preventDefault();
+          alert('Introduce un número de celular válido (10 dígitos después de +57).');
+          vis.focus();
+          return;
+        }
+        hid.value = '+57' + digits;
+      });
+    }
+  });
 })();
 </script>
 </body>
