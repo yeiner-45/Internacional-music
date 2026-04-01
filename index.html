@@ -443,6 +443,22 @@
       background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);
     }
 
+    /* WhatsApp flotante */
+    .wa-float{
+      position:fixed;bottom:1.5rem;right:1.5rem;z-index:99998;
+      width:56px;height:56px;border-radius:50%;
+      background:#25d366;color:#fff;text-decoration:none;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 4px 18px rgba(0,0,0,.28),0 2px 6px rgba(37,211,102,.3);
+      transition:transform var(--trans-media),box-shadow var(--trans-media);
+    }
+    .wa-float i{font-size:1.75rem;line-height:1}
+    .wa-float:hover{
+      transform:scale(1.08);
+      box-shadow:0 8px 28px rgba(0,0,0,.32),0 4px 12px rgba(37,211,102,.4);
+    }
+    .wa-float:focus-visible{outline:2px solid var(--blanco);outline-offset:3px}
+
     @media(max-width:900px){
       #navbar{padding:1rem 1.5rem} #navbar ul{gap:1.5rem}
       .servicios-grid,.portfolio-grid,.reserva-inner,.footer-inner,.config-grid{grid-template-columns:1fr}
@@ -457,6 +473,8 @@
 
 <div class="cursor" id="cursor"></div>
 <div class="cursor-follower" id="cursor-follower"></div>
+
+<a class="wa-float" href="https://wa.me/+573017771649?text=Hola%20Internacional%20Music!%20Vi%20su%20p%C3%A1gina%20web%20y%20me%20gustar%C3%ADa%20cotizar%20un%20evento." target="_blank" rel="noopener noreferrer" aria-label="Escríbenos por WhatsApp"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
 
 <!-- ══ INTRO PUBLICITARIA ESTILO TEMU ══ -->
 <div id="intro-overlay">
