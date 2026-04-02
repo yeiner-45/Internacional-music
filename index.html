@@ -596,6 +596,47 @@
       .reservas-fc-inner{flex-direction:column}
       .reservas-fc-calendar-wrap,.reservas-fc-form-wrap{flex:1 1 100%;width:100%}
     }
+
+    /* ALBUM CARDS */
+    .album-card {
+      background: var(--gris-oscuro);
+      border: 1px solid #ffd700; /* dorado sutil */
+      position: relative;
+      overflow: hidden;
+      transition: all var(--trans-media);
+    }
+    .album-card .album-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform var(--trans-lenta);
+    }
+    .album-card:hover .album-image {
+      transform: scale(1.05);
+    }
+    .album-card .album-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      padding: 1rem;
+      transform: translateY(100%);
+      transition: transform var(--trans-media);
+      color: var(--blanco);
+    }
+    .album-card:hover .album-overlay {
+      transform: translateY(0);
+    }
+    .album-card .album-title {
+      font-family: var(--fuente-titulo);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .album-card .album-date {
+      font-size: 0.8rem;
+      color: var(--texto-secundario);
+    }
   </style>
 </head>
 <body>
@@ -1262,7 +1303,7 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       locale: 'es',
       initialView: 'dayGridMonth',
       initialDate: new Date(),
-      googleCalendarApiKey: GOOGLE_CALENDAR_API_KEY,
+      googleCalendarApiKey: 'AIzaSyD3ggcyE2-QrJviYnhmNMhPJAZmWrLK63k',
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
@@ -1272,7 +1313,7 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       fixedWeekCount: false,
       eventSources: [
         {
-          googleCalendarId: GOOGLE_CALENDAR_ID,
+          googleCalendarId: '80f4c17d72eb0d7cbccb2d3019eaf7d4b044555dc18dae53e9a695f3611b7cbe@group.calendar.google.com',
           className: 'fc-event-google',
           backgroundColor: '#141414',
           borderColor: '#d4af37',

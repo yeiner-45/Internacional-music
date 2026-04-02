@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Dashboard de administración de Internacional Music">
+  <title>Internacional Music - Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --negro:#0a0a0a; --rojo:#cc0000; --rojo-brillante:#ff1a1a; --blanco:#f5f5f5;
+      --gris-oscuro:#1a1a1a; --gris-medio:#2a2a2a; --gris-suave:rgba(245,245,245,.07);
+      --texto-principal:rgba(245,245,245,1); --texto-secundario:rgba(245,245,245,.5); --texto-apagado:rgba(245,245,245,.25);
+      --borde-rojo:rgba(204,0,0,.2); --borde-blanco:rgba(245,245,245,.1);
+      --fuente-titulo:'Bebas Neue',sans-serif; --fuente-cuerpo:'Barlow',sans-serif;
+      --trans-rapida:.2s ease; --trans-media:.35s ease; --trans-lenta:.5s ease;
+      --estado-exito:#00c864; --estado-error:#ff4b4b; --estado-advertencia:#ffb020;
+      --bg-exito:rgba(0,200,100,.12); --bg-error:rgba(255,75,75,.12); --bg-advertencia:rgba(255,176,32,.12);
+      --dorado:#ffd700; --borde-dorado:rgba(255,215,0,.3);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--negro);color:var(--blanco);font-family:var(--fuente-cuerpo);font-weight:300;min-height:100vh;padding:2rem}
+    .dashboard-header{text-align:center;margin-bottom:3rem}
+    .dashboard-header h1{font-family:var(--fuente-titulo);font-size:4rem;color:var(--blanco)}
+    .dashboard-header h1 .red{color:var(--rojo)}
+    .form-container{max-width:600px;margin:0 auto;background:var(--gris-oscuro);padding:2rem;border:1px solid var(--borde-rojo);border-radius:8px}
+    .form-group{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
+    .form-group label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--texto-apagado);font-weight:400}
+    .form-group input,.form-group select{background:var(--gris-medio);border:1px solid var(--borde-blanco);color:var(--blanco);padding:.85rem 1rem;font-family:var(--fuente-cuerpo);font-size:.9rem;outline:none;transition:border-color var(--trans-rapida)}
+    .form-group input:focus,.form-group select:focus{border-color:var(--rojo)}
+    .form-group select{appearance:none}
+    .drag-drop-area{border:2px dashed var(--borde-blanco);padding:2rem;text-align:center;color:var(--texto-secundario);transition:border-color var(--trans-media);cursor:pointer;margin-bottom:1.5rem}
+    .drag-drop-area.dragover{border-color:var(--rojo)}
+    .drag-drop-area p{margin-bottom:1rem}
+    .file-list{margin-top:1rem;text-align:left}
+    .file-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--borde-blanco)}
+    .thumbnails{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.7rem;margin-top:1rem}
+    .thumb-item{background:var(--gris-medio);border:1px solid var(--borde-blanco);border-radius:6px;overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.4rem}
+    .thumb-item img{width:100%;height:70px;object-fit:cover;border-radius:4px}
+    .thumb-item .thumb-name{font-size:.65rem;color:var(--texto-secundario);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
+    .progress-container{margin-top:1.2rem;background:var(--gris-medio);border:1px solid var(--borde-blanco);border-radius:6px;overflow:hidden;height:14px}
+    .progress-bar{width:0%;height:100%;background:linear-gradient(90deg,var(--rojo),var(--rojo-brillante));transition:width .2s ease}
+    .status-message{margin-top:1rem;font-size:.9rem;color:var(--rojo);padding:.6rem .8rem;border:1px solid var(--borde-rojo);border-radius:6px;display:none}
+    .btn-primary{display:inline-block;background:var(--rojo);color:var(--blanco);border:none;padding:1rem 2.5rem;font-family:var(--fuente-cuerpo);font-size:.8rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;position:relative;overflow:hidden;cursor:pointer;transition:var(--trans-media);width:100%}
+    .btn-primary::after{content:'';position:absolute;inset:0;background:var(--rojo-brillante);transform:translateX(-101%);transition:transform .3s ease}
+    .btn-primary:hover::after{transform:translateX(0)} .btn-primary span{position:relative;z-index:1}
+  </style>
+</head>
+<body>
+  <div class="dashboard-header">
+    <h1>Internacional<span class="red"> Music</span> Dashboard</h1>
+  </div>
+  <div class="form-container">
+    <form id="albumForm">
+      <div class="form-group">
+        <label for="eventName">Nombre del Evento</label>
+        <input type="text" id="eventName" required>
+      </div>
+      <div class="form-group">
+        <label for="category">Categoría</label>
+        <select id="category" required>
+          <option value="">Seleccionar Categoría</option>
+          <option value="Boda">Boda</option>
+          <option value="Fiesta">Fiesta</option>
+          <option value="Concierto">Concierto</option>
+          <option value="Evento Corporativo">Evento Corporativo</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="eventDate">Fecha</label>
+        <input type="date" id="eventDate" required>
+      </div>
+      <div class="drag-drop-area" id="dragDropArea">
+        <p><i class="fas fa-cloud-upload-alt"></i></p>
+        <p>Arrastra y suelta las fotos aquí o haz clic para seleccionar</p>
+        <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
+      </div>
+      <div class="thumbnails" id="thumbnails"></div>
+      <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="status-message" id="statusMessage"></div>
+      <button type="submit" class="btn-primary">Guardar Álbum</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import '../js/auth-status.js';
+    import { setupAlbumUploader } from '../js/uploader.js';
+    setupAlbumUploader();
+  </script>
+</body>
+</html>

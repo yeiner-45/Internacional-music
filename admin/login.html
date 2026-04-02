@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Panel de administración de Internacional Music">
+  <title>Internacional Music - Admin Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --negro:#0a0a0a; --rojo:#cc0000; --rojo-brillante:#ff1a1a; --blanco:#f5f5f5;
+      --gris-oscuro:#1a1a1a; --gris-medio:#2a2a2a; --gris-suave:rgba(245,245,245,.07);
+      --texto-principal:rgba(245,245,245,1); --texto-secundario:rgba(245,245,245,.5); --texto-apagado:rgba(245,245,245,.25);
+      --borde-rojo:rgba(204,0,0,.2); --borde-blanco:rgba(245,245,245,.1);
+      --fuente-titulo:'Bebas Neue',sans-serif; --fuente-cuerpo:'Barlow',sans-serif;
+      --trans-rapida:.2s ease; --trans-media:.35s ease; --trans-lenta:.5s ease;
+      --estado-exito:#00c864; --estado-error:#ff4b4b; --estado-advertencia:#ffb020;
+      --bg-exito:rgba(0,200,100,.12); --bg-error:rgba(255,75,75,.12); --bg-advertencia:rgba(255,176,32,.12);
+    }
+    *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
+    body{background:var(--negro);color:var(--blanco);font-family:var(--fuente-cuerpo);font-weight:300;overflow-x:hidden;min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .login-container{text-align:center;max-width:400px;width:100%;padding:2rem;background:var(--gris-oscuro);border:1px solid var(--borde-rojo);border-radius:8px}
+    .login-container h1{font-family:var(--fuente-titulo);font-size:3rem;color:var(--blanco);margin-bottom:2rem}
+    .login-container h1 .red{color:var(--rojo)}
+    .form-group{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
+    .form-group label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--texto-apagado);font-weight:400}
+    .form-group input{background:var(--gris-medio);border:1px solid var(--borde-blanco);color:var(--blanco);padding:.85rem 1rem;font-family:var(--fuente-cuerpo);font-size:.9rem;outline:none;transition:border-color var(--trans-rapida)}
+    .form-group input:focus{border-color:var(--rojo)}
+    .btn-primary{display:inline-block;background:var(--rojo);color:var(--blanco);border:none;padding:1rem 2.5rem;font-family:var(--fuente-cuerpo);font-size:.8rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;position:relative;overflow:hidden;cursor:pointer;transition:var(--trans-media);width:100%}
+    .btn-primary::after{content:'';position:absolute;inset:0;background:var(--rojo-brillante);transform:translateX(-101%);transition:transform .3s ease}
+    .btn-primary:hover::after{transform:translateX(0)} .btn-primary span{position:relative;z-index:1}
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Internacional<span class="red"> Music</span></h1>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+      </div>
+      <div id="loginError" style="display:none;color:var(--estado-error);background:var(--bg-error);border-left:2px solid var(--estado-error);padding:.6rem .8rem;margin-bottom:1rem;font-size:.85rem;border-radius:4px;"></div>
+      <button type="submit" class="btn-primary">Login</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import './../js/auth-status.js';
+    import { login } from '../js/auth.js';
+
+    const form = document.getElementById('loginForm');
+    const errorBox = document.getElementById('loginError');
+    const btnLogin = form.querySelector('button[type="submit"]');
+    const inputEmail = document.getElementById('email');
+
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    const updateButtonState = () => {
+      btnLogin.disabled = !isValidEmail(inputEmail.value.trim());
+      btnLogin.style.opacity = btnLogin.disabled ? '0.6' : '1';
+      btnLogin.style.cursor = btnLogin.disabled ? 'not-allowed' : 'pointer';
+    };
+
+    inputEmail.addEventListener('input', updateButtonState);
+    updateButtonState();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (btnLogin.disabled) return;
+      errorBox.style.display = 'none';
+      const email = inputEmail.value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        await login(email, password);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        errorBox.textContent = 'Acceso denegado: Credenciales incorrectas';
+        errorBox.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
