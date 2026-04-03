@@ -46,7 +46,10 @@ async function listUpcomingEvents() {
 
     });
 
-    return response.result.items;
+    const events = Array.isArray(response?.result?.items) ? response.result.items : [];
+    console.log('Eventos recibidos:', response?.result?.items);
+
+    return events;
 
   } catch (error) {
 
