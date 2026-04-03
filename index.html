@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.11/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/locales-all.global.min.js"></script>
+  <script src="https://apis.google.com/js/api.js"></script>
   <style>
     :root {
       --negro:#0a0a0a; --rojo:#cc0000; --rojo-brillante:#ff1a1a; --blanco:#f5f5f5;
@@ -19,6 +20,7 @@
       --trans-rapida:.2s ease; --trans-media:.35s ease; --trans-lenta:.5s ease;
       --estado-exito:#00c864; --estado-error:#ff4b4b; --estado-advertencia:#ffb020;
       --bg-exito:rgba(0,200,100,.12); --bg-error:rgba(255,75,75,.12); --bg-advertencia:rgba(255,176,32,.12);
+      --dorado:#FFD700;
     }
     *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
     body{background:var(--negro);color:var(--blanco);font-family:var(--fuente-cuerpo);font-weight:300;overflow-x:hidden}
@@ -150,6 +152,14 @@
     .contact-item a:hover{color:var(--rojo)}
     .contact-dot{width:6px;height:6px;background:var(--rojo);border-radius:50%;flex-shrink:0}
     .reserva-right{width:100%;min-width:0}
+
+    /* DISPONIBILIDAD */
+    .disponibilidad-section{padding:8rem 4rem;min-height:100vh;background:var(--negro)}
+    .upcoming-events-list{display:flex;flex-direction:column;gap:1.5rem;max-width:800px;margin:0 auto}
+    .event-item{background:var(--gris-oscuro);border:1px solid var(--dorado);padding:1.5rem;border-radius:8px;transition:transform var(--trans-media)}
+    .event-item:hover{transform:translateY(-5px)}
+    .event-title{color:var(--dorado);font-family:var(--fuente-titulo);font-size:1.8rem;margin-bottom:.5rem}
+    .event-date{color:var(--blanco);font-size:1rem}
 
     /* ACCESO */
     .acceso-section{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem;background:radial-gradient(ellipse at 50% 40%,rgba(204,0,0,.08) 0%,transparent 65%),var(--negro)}
@@ -650,6 +660,7 @@
       <li><a href="#" onclick="showPage('inicio');return false">Inicio</a></li>
       <li><a href="#" onclick="showPage('portafolio');return false">Portafolio</a></li>
       <li><a href="#" onclick="showPage('reserva');return false">Reserva</a></li>
+      <li><a href="#" onclick="showPage('disponibilidad');return false">Disponibilidad</a></li>
     </ul>
   </nav>
 </header>
@@ -841,6 +852,16 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+</section>
+
+<!-- ══ DISPONIBILIDAD ══ -->
+<section id="page-disponibilidad" class="page">
+  <section class="disponibilidad-section">
+    <div class="disponibilidad-header"><p class="section-label">Próximos eventos</p><div class="red-divider"></div><h2 class="section-title">DISPONIBILIDAD</h2></div>
+    <div id="upcoming-events" class="upcoming-events-list">
+      <!-- Eventos se renderizarán aquí -->
     </div>
   </section>
 </section>
@@ -1214,6 +1235,36 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       });
     }
   });
+})();
+</script>
+<script src="js/calendar-service.js"></script>
+<script>
+(function initDisponibilidad(){
+  document.addEventListener('DOMContentLoaded', function(){
+    loadGapi();
+    // Esperar un poco para que gapi se cargue
+    setTimeout(async () => {
+      const events = await listUpcomingEvents();
+      renderEvents(events);
+    }, 2000);
+  });
+
+  function renderEvents(events) {
+    const container = document.getElementById('upcoming-events');
+    if (!container) return;
+    container.innerHTML = '';
+    events.forEach(event => {
+      const eventDiv = document.createElement('div');
+      eventDiv.className = 'event-item';
+      const start = new Date(event.start.dateTime || event.start.date);
+      const end = new Date(event.end.dateTime || event.end.date);
+      eventDiv.innerHTML = `
+        <h3 class="event-title">${event.summary}</h3>
+        <p class="event-date">${start.toLocaleDateString('es-ES')} - ${start.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})} a ${end.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</p>
+      `;
+      container.appendChild(eventDiv);
+    });
+  }
 })();
 </script>
 </body>
