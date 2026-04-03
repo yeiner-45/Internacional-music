@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Portafolio de Internacional Music - Eventos, DJ y Fotografía en Tarazá y Caucasia">
+  <title>Portafolio | Internacional Music</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --negro:#0a0a0a; --rojo:#cc0000; --rojo-brillante:#ff1a1a; --blanco:#f5f5f5;
+      --gris-oscuro:#1a1a1a; --gris-medio:#2a2a2a; --gris-suave:rgba(245,245,245,.07);
+      --texto-principal:rgba(245,245,245,1); --texto-secundario:rgba(245,245,245,.5); --texto-apagado:rgba(245,245,245,.25);
+      --borde-rojo:rgba(204,0,0,.2); --borde-blanco:rgba(245,245,245,.1);
+      --fuente-titulo:'Bebas Neue',sans-serif; --fuente-cuerpo:'Barlow',sans-serif;
+      --trans-rapida:.2s ease; --trans-media:.35s ease; --trans-lenta:.5s ease;
+      --estado-exito:#00c864; --estado-error:#ff4b4b; --estado-advertencia:#ffb020;
+      --bg-exito:rgba(0,200,100,.12); --bg-error:rgba(255,75,75,.12); --bg-advertencia:rgba(255,176,32,.12);
+      --dorado:#FFD700;
+    }
+    *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
+    body{background:var(--negro);color:var(--blanco);font-family:var(--fuente-cuerpo);font-weight:300;overflow-x:hidden}
+    body.custom-cursor,body.custom-cursor *{cursor:none !important}
+    body:not(.custom-cursor),body:not(.custom-cursor) *{cursor:auto !important}
+    .cursor{width:12px;height:12px;background:var(--rojo);border-radius:50%;position:fixed;pointer-events:none;z-index:999999;transition:transform .15s ease;display:none}
+    .cursor-follower{width:36px;height:36px;border:1px solid rgba(204,0,0,.5);border-radius:50%;position:fixed;pointer-events:none;z-index:999998;transition:all .18s ease;display:none}
+    body.custom-cursor .cursor,body.custom-cursor .cursor-follower{display:block}
+    .page{display:none} .page.active{display:block}
+    .btn-primary{display:inline-block;background:var(--rojo);color:var(--blanco);border:none;padding:1rem 2.5rem;font-family:var(--fuente-cuerpo);font-size:.8rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;position:relative;overflow:hidden;cursor:none;transition:var(--trans-media)}
+    .btn-primary::after{content:'';position:absolute;inset:0;background:var(--rojo-brillante);transform:translateX(-101%);transition:transform .3s ease}
+    .btn-primary:hover::after{transform:translateX(0)} .btn-primary span{position:relative;z-index:1}
+    .btn-secondary{display:inline-block;color:var(--texto-secundario);text-decoration:none;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;border-bottom:1px solid var(--borde-blanco);padding-bottom:3px;cursor:none;transition:var(--trans-media)}
+    .btn-secondary:hover{color:var(--blanco);border-color:var(--rojo)}
+    .btn-outline{background:none;border:1px solid var(--borde-blanco);color:var(--texto-secundario);padding:.5rem 1.2rem;font-family:var(--fuente-cuerpo);font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;cursor:none;transition:var(--trans-media)}
+    .btn-outline:hover{border-color:var(--rojo);color:var(--blanco)}
+    .form-group{display:flex;flex-direction:column;gap:.5rem}
+    .form-group label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--texto-apagado);font-weight:400}
+    .form-group input,.form-group select,.form-group textarea{background:var(--gris-oscuro);border:1px solid var(--borde-blanco);color:var(--blanco);padding:.85rem 1rem;font-family:var(--fuente-cuerpo);font-size:.9rem;outline:none;cursor:none;transition:border-color var(--trans-rapida)}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--rojo)}
+    .form-group select{appearance:none} .form-group textarea{resize:vertical;min-height:100px}
+    .section-label{font-size:.7rem;letter-spacing:.4em;text-transform:uppercase;color:var(--rojo);margin-bottom:.75rem;font-weight:400}
+    .section-title{font-family:var(--fuente-titulo);font-size:clamp(3rem,7vw,6rem);letter-spacing:.02em;line-height:1}
+    .red-divider{width:50px;height:2px;background:var(--rojo);margin-bottom:1rem}
+    .badge{display:inline-block;padding:.25rem .75rem;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600}
+    .badge-pending{background:var(--bg-advertencia);color:var(--estado-advertencia)}
+    .badge-paid{background:var(--bg-exito);color:var(--estado-exito)}
+    .badge-done{background:var(--gris-suave);color:var(--texto-apagado)}
+
+    /* NAV */
+    #navbar{position:fixed;top:0;width:100%;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.5rem 4rem;background:linear-gradient(180deg,rgba(10,10,10,.97) 0%,transparent 100%);border-bottom:1px solid var(--borde-rojo);backdrop-filter:blur(8px)}
+    .logo{font-family:var(--fuente-titulo);font-size:1.8rem;letter-spacing:.12em;color:var(--blanco);text-decoration:none;cursor:none}
+    .logo span{color:var(--rojo)}
+    #navbar ul{list-style:none;display:flex;gap:3rem}
+    #navbar ul a{color:var(--texto-secundario);text-decoration:none;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;font-weight:400;cursor:none;transition:color var(--trans-media);position:relative}
+    #navbar ul a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--rojo);transform:scaleX(0);transition:transform var(--trans-media)}
+    #navbar ul a:hover{color:var(--blanco)} #navbar ul a:hover::after{transform:scaleX(1)}
+
+    /* FOOTER */
+    #footer{background:var(--negro);border-top:1px solid var(--borde-rojo);padding:4rem}
+    .footer-inner{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+    .footer-brand .logo{display:block;margin-bottom:1rem;font-size:2rem}
+    .footer-brand p{color:var(--texto-apagado);font-size:.85rem;line-height:1.7;max-width:280px}
+    .footer-col h4{font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--texto-apagado);margin-bottom:1.2rem;font-weight:400}
+    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+    .footer-col ul a{color:var(--texto-secundario);text-decoration:none;font-size:.85rem;cursor:none;transition:color var(--trans-media)}
+    .footer-col ul a:hover{color:var(--rojo)}
+    .footer-col .footer-address{color:var(--texto-secundario);font-size:.85rem;line-height:1.5}
+    .footer-bottom{border-top:1px solid var(--gris-suave);padding-top:2rem;display:flex;justify-content:space-between;align-items:center;color:var(--texto-apagado);font-size:.75rem}
+    .footer-bottom .red{color:var(--rojo)}
+    .footer-social{margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap}
+    .footer-social a{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border:1px solid var(--borde-blanco);color:var(--texto-apagado);text-decoration:none;cursor:none;transition:all var(--trans-media);position:relative;overflow:hidden;}
+    .footer-social a::before{content:'';position:absolute;inset:0;transform:translateY(101%);transition:transform .3s ease;}
+    .footer-social a:hover{border-color:transparent;color:#fff;transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.4)}
+    .footer-social a i{position:relative;z-index:1;font-size:1.05rem}
+    .footer-social a.fb::before{background:#1877f2}
+    .footer-social a.yt::before{background:#ff0000}
+    .footer-social a.wa::before{background:#25d366}
+    .footer-social a.tt::before{background:#000}
+    .footer-social a:hover::before{transform:translateY(0)}
+    .footer-social-label{font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;color:var(--texto-apagado);margin-bottom:.6rem;font-weight:400}
+
+    /* PORTAFOLIO */
+    .portafolio-section{padding:10rem 4rem 8rem;background:var(--gris-oscuro);min-height:100vh}
+    .filtros{display:flex;gap:1rem;margin-bottom:3rem;justify-content:center}
+    .filtro{background:none;border:1px solid var(--borde-blanco);color:var(--texto-secundario);padding:.5rem 1.5rem;font-family:var(--fuente-cuerpo);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;cursor:none;transition:all var(--trans-media)}
+    .filtro.active,.filtro:hover{border-color:var(--rojo);color:var(--blanco)}
+    .portfolio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem}
+    .portfolio-item{position:relative;overflow:hidden;border-radius:8px;cursor:none}
+    .portfolio-bg{width:100%;height:300px;object-fit:cover;transition:transform var(--trans-lenta)}
+    .portfolio-item:hover .portfolio-bg{transform:scale(1.05)}
+    .portfolio-deco{position:absolute;top:1rem;left:1rem;background:var(--rojo);color:var(--blanco);padding:.25rem .75rem;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;font-weight:600;border-radius:4px}
+    .portfolio-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,10,10,.8) 0%,transparent 50%);display:flex;flex-direction:column;justify-content:flex-end;padding:2rem;opacity:0;transition:opacity var(--trans-media)}
+    .portfolio-item:hover .portfolio-overlay{opacity:1}
+    .portfolio-tag{font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rojo);margin-bottom:.3rem;font-weight:400}
+    .portfolio-title{font-family:var(--fuente-titulo);font-size:1.5rem}
+    .portfolio-date{font-size:.72rem;color:var(--texto-apagado);margin-top:.25rem}
+  </style>
+</head>
+<body>
+  <header>
+    <nav id="navbar">
+      <a href="/" class="logo">
+        <img src="../assets/img/02.png" alt="logo de Internacional Music" width="100">
+      </a>
+      <ul>
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/portafolio">Portafolio</a></li>
+        <li><a href="/reserva">Reserva</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <!-- PORTAFOLIO -->
+    <section class="portafolio-section">
+      <div class="portafolio-header"><p class="section-label">Nuestro trabajo</p><div class="red-divider"></div><h2 class="section-title">PORTAFOLIO</h2></div>
+      <div class="filtros">
+        <button class="filtro active" data-filter="todos">Todos</button>
+        <button class="filtro" data-filter="dj">DJ</button>
+        <button class="filtro" data-filter="foto">Fotografía</button>
+        <button class="filtro" data-filter="show">Shows</button>
+      </div>
+      <div class="portfolio-grid">
+        <article class="portfolio-item featured" data-cat="todos">
+          <img
+            class="portfolio-bg img-04"
+            src="../assets/img/04.jpg"
+            alt="Montaje de DJ profesional de Internacional Music en Tarazá, Antioquia"
+            loading="lazy"
+          >
+          <div class="portfolio-deco">DJ</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-tag">Eventos</div>
+            <div class="portfolio-title">Internacional Music</div>
+            <div class="portfolio-date">2024</div>
+          </div>
+        </article>
+        <article class="portfolio-item" data-cat="todos">
+          <img
+            class="portfolio-bg img-06"
+            src="../assets/img/06.jpg"
+            alt="Fotografía de evento social cubierto por Internacional Music"
+            loading="lazy"
+          >
+          <div class="portfolio-deco">FOTO</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-tag">Fotografía</div>
+            <div class="portfolio-title">Momentos únicos</div>
+            <div class="portfolio-date">2024</div>
+          </div>
+        </article>
+        <article class="portfolio-item" data-cat="todos">
+          <img
+            class="portfolio-bg img-07"
+            src="../assets/img/07.jpg"
+            alt="Show en vivo con luces y efectos de Internacional Music"
+            loading="lazy"
+          >
+          <div class="portfolio-deco">SHOW</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-tag">Shows</div>
+            <div class="portfolio-title">Espectáculos</div>
+            <div class="portfolio-date">2024</div>
+          </div>
+        </article>
+        <article class="portfolio-item" data-cat="todos">
+          <img
+            class="portfolio-bg img-08"
+            src="../assets/img/08.jpg"
+            alt="Evento empresarial organizado por Internacional Music en Antioquia"
+            loading="lazy"
+          >
+          <div class="portfolio-deco">EVENTOS</div>
+          <div class="portfolio-overlay">
+            <div class="portfolio-tag">Eventos</div>
+            <div class="portfolio-title">Internacional Music</div>
+            <div class="portfolio-date">2024</div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer">
+    <div class="footer-inner">
+      <div class="footer-brand"><div class="logo"> <img src="../assets/img/02.png" alt="logo de Internacional Music"  width="300"> <span>.</span></div><p>Hacemos de tus eventos especiales momentos inolvidables con nuestros servicios de DJ, fotografía y espectáculos.</p>
+        <div class="footer-social-label">Síguenos</div>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/profile.php?id=61585000178496" target="_blank" class="fb" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://www.youtube.com/@internacionalmusicstudios4762" target="_blank" class="yt" title="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="https://wa.me/573017771649" target="_blank" class="wa" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="https://www.tiktok.com/@internacional.mus16" target="_blank" class="tt" title="TikTok"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+      <div class="footer-col"><h4>Servicios</h4><ul><li><a href="#">DJ Profesional</a></li><li><a href="#">Fotografía</a></li><li><a href="#">Shows en vivo</a></li></ul></div>
+      <div class="footer-col"><h4>Empresa</h4><ul><li><a href="#">Sobre nosotros</a></li><li><a href="/portafolio">Portafolio</a></li><li><a href="#">Testimonios</a></li></ul></div>
+      <div class="footer-col"><h4>Contacto</h4><ul><li><a href="mailto:contacto@internacionalmusic.com" target="_blank" rel="noopener noreferrer">contacto@internacionalmusic.com</a></li><li><a href="tel:+573017771649">+57 301 777 1649</a></li><li><span class="footer-address">Taraza-Antioquia, Colombia</span></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 <span class="red">Internacional Music</span>. Todos los derechos reservados.</span><span>Internacional Music</span></div>
+  </footer>
+
+  <script>
+    // Filtros del portafolio
+    document.addEventListener('DOMContentLoaded', function(){
+      const filtros = document.querySelectorAll('.filtro');
+      const items = document.querySelectorAll('.portfolio-item');
+
+      filtros.forEach(filtro => {
+        filtro.addEventListener('click', function(){
+          filtros.forEach(f => f.classList.remove('active'));
+          this.classList.add('active');
+
+          const filter = this.getAttribute('data-filter');
+          items.forEach(item => {
+            if (filter === 'todos' || item.getAttribute('data-cat') === filter) {
+              item.style.display = 'block';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
