@@ -37,7 +37,9 @@ async function listUpcomingEvents() {
       orderBy: 'startTime',
     });
 
-    const items = Array.isArray(response?.result?.items) ? response.result.items : [];
+    console.log('Respuesta completa de Google:', response);
+
+    const items = (response && response.result && response.result.items) ? response.result.items : [];
     console.log('Eventos recibidos:', items);
 
     // Formato compatible con FullCalendar
