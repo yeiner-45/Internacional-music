@@ -1112,7 +1112,7 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
 </script>
 <script>
 (function initReservasCalendar(){
-  document.addEventListener('DOMContentLoaded', function(){
+  document.addEventListener('DOMContentLoaded', async function(){
     var calEl = document.getElementById('calendar');
     if (!calEl || typeof FullCalendar === 'undefined') return;
 
@@ -1160,18 +1160,21 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       fechaInput.min = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
     }
 
-    var gcalPlugin = typeof FullCalendar !== 'undefined' ? FullCalendar.GoogleCalendar : null;
-    if (!gcalPlugin){
-      setLoadingVisible(false);
-      return;
+    // Carga segura de eventos de Google Calendar y formato válido para FullCalendar
+    var googleEvents = [];
+    try {
+      await loadGapi();
+      googleEvents = await listUpcomingEvents();
+      if (!Array.isArray(googleEvents)) googleEvents = [];
+    } catch (err) {
+      console.error('Error cargando eventos de Google Calendar:', err);
+      googleEvents = [];
     }
 
     var calendar = new FullCalendar.Calendar(calEl, {
-      plugins: [ gcalPlugin ],
       locale: 'es',
       initialView: 'dayGridMonth',
       initialDate: new Date(),
-      googleCalendarApiKey: 'AIzaSyD3ggcyE2-QrJviYnhmNMhPJAZmWrLK63k',
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
@@ -1181,17 +1184,13 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       fixedWeekCount: false,
       eventSources: [
         {
-          googleCalendarId: '80f4c17d72eb0d7cbccb2d3019eaf7d4b044555dc18dae53e9a695f3611b7cbe@group.calendar.google.com',
+          events: googleEvents,
           className: 'fc-event-google',
           backgroundColor: '#141414',
           borderColor: '#d4af37',
-          textColor: '#ffffff',
-          failure: function(err){
-            setLoadingVisible(false);
-            if (typeof console !== 'undefined' && console.error) console.error('Google Calendar:', err);
-          }
+          textColor: '#ffffff'
         },
-        { events: eventosConfirmados }
+        { events: Array.isArray(eventosConfirmados) ? eventosConfirmados : [] }
       ],
       eventSourceFailure: function(err){
         setLoadingVisible(false);
