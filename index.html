@@ -488,6 +488,31 @@
       color:#fff;
       font-weight:700;
     }
+
+    /* Días pasados: opacidad baja y fondo gris tenue */
+    #calendar .fc .fc-day-past {
+      background-color: rgba(245,245,245,0.1) !important;
+      opacity: 0.5;
+    }
+    #calendar .fc .fc-day-past .fc-daygrid-day-number {
+      color: rgba(245,245,245,0.5);
+    }
+
+    /* Selección personalizada: dorado suave con borde fuerte */
+    #calendar .fc .fc-highlight {
+      background-color: rgba(212, 175, 55, 0.3) !important;
+      border: 2px solid #d4af37 !important;
+    }
+    #calendar .fc .fc-highlight::after {
+      content: '✓';
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: #d4af37;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
     .reservas-fc-form-wrap{
       flex:1 1 calc(40% - 2rem);min-width:280px;
       max-width:100%;
@@ -1174,6 +1199,27 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       },
       height: 'auto',
       fixedWeekCount: false,
+      validRange: {
+        start: new Date().toISOString().split('T')[0]
+      },
+      selectable: true,
+      unselectAuto: false,
+      selectMirror: true,
+      select: function(info) {
+        const today = new Date().toISOString().split('T')[0];
+        if (info.startStr < today) {
+          alert('Lo sentimos, no puedes seleccionar una fecha que ya ha pasado');
+          return;
+        }
+        if (dayIsBlocked(info.view.calendar, info.startStr)) {
+          alert('Esta fecha ya se encuentra reservada. Por favor, elige otro día o contáctanos para verificar disponibilidad');
+          return;
+        }
+        if (fechaInput) fechaInput.value = info.startStr;
+      },
+      unselect: function(info) {
+        if (fechaInput) fechaInput.value = '';
+      },
       eventSources: [
         {
           events: listUpcomingEvents,
@@ -1189,13 +1235,6 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       },
       loading: function(isLoading){
         setLoadingVisible(!!isLoading);
-      },
-      dateClick: function(info){
-        if (dayIsBlocked(info.view.calendar, info.dateStr)) {
-          alert('Lo sentimos, esta fecha ya está reservada. Por favor elige otro día');
-          return;
-        }
-        if (fechaInput) fechaInput.value = info.dateStr;
       }
     });
 
