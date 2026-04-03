@@ -44,7 +44,7 @@ async function listUpcomingEvents() {
 
     // Formato compatible con FullCalendar
     const formatted = items.map(item => ({
-      title: item.summary || 'Evento sin título',
+      title: '📅 Fecha Reservada',
       start: item.start?.dateTime || item.start?.date || null,
       end: item.end?.dateTime || item.end?.date || null,
       extendedProps: {

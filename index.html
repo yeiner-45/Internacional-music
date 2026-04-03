@@ -498,19 +498,30 @@
       color: rgba(245,245,245,0.5);
     }
 
-    /* Selección personalizada: dorado suave con borde fuerte */
+    /* Selección personalizada: dorado brillante con animación de pulso */
     #calendar .fc .fc-highlight {
-      background-color: rgba(212, 175, 55, 0.3) !important;
+      background-color: rgba(212, 175, 55, 0.6) !important;
       border: 2px solid #d4af37 !important;
+      animation: pulse 2s infinite;
+    }
+    #calendar .fc .fc-highlight .fc-daygrid-day-number {
+      color: #ffffff !important;
+      font-weight: bold;
     }
     #calendar .fc .fc-highlight::after {
       content: '✓';
       position: absolute;
       top: 5px;
       right: 5px;
-      color: #d4af37;
+      color: #ffffff;
       font-size: 16px;
       font-weight: bold;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
 
     .reservas-fc-form-wrap{
