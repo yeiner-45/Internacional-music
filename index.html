@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.11/index.global.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/locales-all.global.min.js"></script>
+  <script src="https://apis.google.com/js/api.js"></script>
   <style>
     :root {
       --negro:#0a0a0a; --rojo:#cc0000; --rojo-brillante:#ff1a1a; --blanco:#f5f5f5;
@@ -19,6 +20,7 @@
       --trans-rapida:.2s ease; --trans-media:.35s ease; --trans-lenta:.5s ease;
       --estado-exito:#00c864; --estado-error:#ff4b4b; --estado-advertencia:#ffb020;
       --bg-exito:rgba(0,200,100,.12); --bg-error:rgba(255,75,75,.12); --bg-advertencia:rgba(255,176,32,.12);
+      --dorado:#FFD700;
     }
     *{margin:0;padding:0;box-sizing:border-box} html{scroll-behavior:smooth}
     body{background:var(--negro);color:var(--blanco);font-family:var(--fuente-cuerpo);font-weight:300;overflow-x:hidden}
@@ -151,6 +153,14 @@
     .contact-dot{width:6px;height:6px;background:var(--rojo);border-radius:50%;flex-shrink:0}
     .reserva-right{width:100%;min-width:0}
 
+    /* DISPONIBILIDAD */
+    .disponibilidad-section{padding:8rem 4rem;min-height:100vh;background:var(--negro)}
+    .upcoming-events-list{display:flex;flex-direction:column;gap:1.5rem;max-width:800px;margin:0 auto}
+    .event-item{background:var(--gris-oscuro);border:1px solid var(--dorado);padding:1.5rem;border-radius:8px;transition:transform var(--trans-media)}
+    .event-item:hover{transform:translateY(-5px)}
+    .event-title{color:var(--dorado);font-family:var(--fuente-titulo);font-size:1.8rem;margin-bottom:.5rem}
+    .event-date{color:var(--blanco);font-size:1rem}
+
     /* ACCESO */
     .acceso-section{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:6rem 1.5rem;background:radial-gradient(ellipse at 50% 40%,rgba(204,0,0,.08) 0%,transparent 65%),var(--negro)}
     .login-box{width:100%;max-width:420px;background:var(--gris-oscuro);border:1px solid var(--borde-rojo);padding:3rem}
@@ -171,62 +181,6 @@
       padding:.5rem .75rem;
       border-left:2px solid var(--estado-error);
     }
-
-    /* ADMIN */
-    #page-admin.active{display:block}
-    .admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-    .admin-sidebar{background:var(--gris-oscuro);border-right:1px solid var(--borde-rojo);padding:2.5rem 2rem;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-    .admin-logo{font-size:1.6rem;margin-bottom:.4rem}
-    .admin-role{font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--texto-apagado);margin-bottom:2.5rem}
-    .admin-nav{list-style:none;display:flex;flex-direction:column;gap:.4rem}
-    .admin-nav a{display:flex;align-items:center;padding:.75rem 1rem;color:var(--texto-apagado);text-decoration:none;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;border-left:2px solid transparent;cursor:none;transition:all var(--trans-media)}
-    .admin-nav a:hover,.admin-nav a.active{color:var(--blanco);border-left-color:var(--rojo);background:rgba(204,0,0,.07)}
-    .btn-logout{margin-top:auto;background:none;border:1px solid var(--borde-blanco);color:var(--texto-apagado);padding:.6rem 1rem;font-family:var(--fuente-cuerpo);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:none;transition:all var(--trans-media)}
-    .btn-logout:hover{border-color:var(--rojo);color:var(--rojo)}
-    .admin-content{padding:3rem;background:var(--negro);overflow-y:auto}
-    .admin-header{margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--gris-suave)}
-    .admin-header h2{font-family:var(--fuente-titulo);font-size:2.5rem;letter-spacing:.03em}
-    .admin-tab.hidden{display:none}
-    .tab-row{display:flex;gap:.4rem;margin-bottom:2rem;flex-wrap:wrap}
-    .tab{padding:.5rem 1.2rem;background:none;border:1px solid var(--borde-blanco);color:var(--texto-apagado);font-family:var(--fuente-cuerpo);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;cursor:none;transition:all var(--trans-media)}
-    .tab.active,.tab:hover{background:var(--rojo);border-color:var(--rojo);color:var(--blanco)}
-    .reservas-table{width:100%;border-collapse:collapse}
-    .reservas-table th{text-align:left;font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--texto-apagado);padding:.75rem 1rem;border-bottom:1px solid var(--gris-suave);font-weight:400}
-    .reservas-table td{padding:1.2rem 1rem;border-bottom:1px solid rgba(245,245,245,.04);font-size:.85rem;color:var(--texto-secundario)}
-    .reservas-table tr:hover td{background:rgba(204,0,0,.04)}
-    .reservas-table strong{color:var(--blanco)}
-    .table-sub{font-size:.73rem;color:var(--texto-apagado)}
-    .upload-zone{border:2px dashed var(--borde-rojo);padding:3rem;text-align:center;background:rgba(204,0,0,.02);margin-bottom:2rem;cursor:none;transition:border-color var(--trans-media),background var(--trans-media)}
-    .upload-zone:hover{border-color:var(--rojo);background:rgba(204,0,0,.05)}
-    .upload-icon{font-size:2rem;color:var(--rojo);margin-bottom:.75rem}
-    .upload-zone p{color:var(--texto-secundario);font-size:.88rem;margin-bottom:.5rem}
-    .upload-zone span{color:var(--texto-apagado);font-size:.75rem}
-    .archivos-lista{display:flex;flex-direction:column;gap:.5rem;margin-bottom:2rem}
-    .archivo-item{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;background:var(--gris-oscuro);border-left:2px solid var(--rojo)}
-    .archivo-nombre{font-size:.85rem;color:var(--blanco)}
-    .archivo-meta{font-size:.72rem;color:var(--texto-apagado);margin-top:.2rem}
-    .archivo-ok{color:var(--rojo);font-size:.9rem}
-    .share-box{padding:1.5rem;background:var(--gris-oscuro);border:1px solid var(--borde-rojo)}
-    .share-label{font-weight:600;margin-bottom:.3rem}
-    .share-desc{color:var(--texto-apagado);font-size:.8rem;margin-bottom:1.2rem}
-    .share-actions{display:flex;gap:1rem}
-    .portfolio-admin-list{display:flex;flex-direction:column;gap:.75rem}
-    .portfolio-admin-item{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;background:var(--gris-oscuro);border-left:2px solid var(--borde-rojo);transition:border-color var(--trans-media)}
-    .portfolio-admin-item:hover{border-color:var(--rojo)}
-    .pai-info{display:flex;flex-direction:column;gap:.3rem}
-    .pai-cat{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;font-weight:600}
-    .pai-cat.dj{color:var(--rojo)} .pai-cat.foto{color:#6688ff} .pai-cat.show{color:#44ddaa}
-    .pai-info strong{color:var(--blanco);font-size:.95rem}
-    .pai-meta{color:var(--texto-apagado);font-size:.75rem}
-    .pai-actions{display:flex;gap:.5rem}
-    .config-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
-    .config-card{background:var(--gris-oscuro);border:1px solid var(--borde-blanco);padding:2rem}
-    .config-card-title{font-family:var(--fuente-titulo);font-size:1.3rem;letter-spacing:.05em;color:var(--texto-secundario);margin-bottom:1.5rem}
-    .integracion-item{padding:1.2rem;background:var(--negro);border-left:2px solid var(--borde-rojo);margin-bottom:.75rem;transition:border-color var(--trans-media)}
-    .integracion-item:hover{border-color:var(--rojo)}
-    .integracion-header{margin-bottom:.75rem}
-    .integracion-header strong{display:block;color:var(--blanco);font-size:.9rem}
-    .integracion-desc{font-size:.75rem;color:var(--texto-apagado)}
 
     /* ══ INTRO PUBLICITARIA ══ */
     #intro-overlay{
@@ -534,6 +488,42 @@
       color:#fff;
       font-weight:700;
     }
+
+    /* Días pasados: opacidad baja y fondo gris tenue */
+    #calendar .fc .fc-day-past {
+      background-color: rgba(245,245,245,0.1) !important;
+      opacity: 0.5;
+    }
+    #calendar .fc .fc-day-past .fc-daygrid-day-number {
+      color: rgba(245,245,245,0.5);
+    }
+
+    /* Selección personalizada: dorado brillante con animación de pulso */
+    #calendar .fc .fc-highlight {
+      background-color: rgba(212, 175, 55, 0.6) !important;
+      border: 2px solid #d4af37 !important;
+      animation: pulse 2s infinite;
+    }
+    #calendar .fc .fc-highlight .fc-daygrid-day-number {
+      color: #ffffff !important;
+      font-weight: bold;
+    }
+    #calendar .fc .fc-highlight::after {
+      content: '✓';
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
     .reservas-fc-form-wrap{
       flex:1 1 calc(40% - 2rem);min-width:280px;
       max-width:100%;
@@ -595,6 +585,47 @@
       #footer{padding:3rem 1.5rem} .footer-inner{grid-template-columns:1fr 1fr}
       .reservas-fc-inner{flex-direction:column}
       .reservas-fc-calendar-wrap,.reservas-fc-form-wrap{flex:1 1 100%;width:100%}
+    }
+
+    /* ALBUM CARDS */
+    .album-card {
+      background: var(--gris-oscuro);
+      border: 1px solid #ffd700; /* dorado sutil */
+      position: relative;
+      overflow: hidden;
+      transition: all var(--trans-media);
+    }
+    .album-card .album-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform var(--trans-lenta);
+    }
+    .album-card:hover .album-image {
+      transform: scale(1.05);
+    }
+    .album-card .album-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      padding: 1rem;
+      transform: translateY(100%);
+      transition: transform var(--trans-media);
+      color: var(--blanco);
+    }
+    .album-card:hover .album-overlay {
+      transform: translateY(0);
+    }
+    .album-card .album-title {
+      font-family: var(--fuente-titulo);
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .album-card .album-date {
+      font-size: 0.8rem;
+      color: var(--texto-secundario);
     }
   </style>
 </head>
@@ -665,7 +696,7 @@
       <li><a href="#" onclick="showPage('inicio');return false">Inicio</a></li>
       <li><a href="#" onclick="showPage('portafolio');return false">Portafolio</a></li>
       <li><a href="#" onclick="showPage('reserva');return false">Reserva</a></li>
-      <li><a href="#" onclick="showPage('acceso');return false">Acceso</a></li>
+      <li><a href="#" onclick="showPage('disponibilidad');return false">Disponibilidad</a></li>
     </ul>
   </nav>
 </header>
@@ -861,100 +892,14 @@
   </section>
 </section>
 
-<!-- ══ ACCESO ══ -->
-<section id="page-acceso" class="page">
-  <section class="acceso-section">
-    <div class="login-box">
-        <div class="logo login-logo"> <img src="assets\img/02.png" alt="logo de Internacional Music"  width="300"> </div>
-        <p class="login-sub">Panel de control</p>
-      <form id="login-form" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label>Correo electrónico</label>
-          <input type="email" name="email" placeholder="usuario@ejemplo.com" required autocomplete="username">
-        </div>
-        <div class="form-group">
-          <label>Contraseña</label>
-          <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
-        </div>
-        <div class="login-extras">
-          <label class="remember-me"><input type="checkbox"> Recordarme</label>
-          <a href="#" class="forgot-link">¿Olvidó su contraseña?</a>
-        </div>
-        <p id="login-error" class="login-error" aria-live="polite"></p>
-        <button type="submit" class="btn-primary login-btn"><span>Iniciar sesión →</span></button>
-      </form>
+<!-- ══ DISPONIBILIDAD ══ -->
+<section id="page-disponibilidad" class="page">
+  <section class="disponibilidad-section">
+    <div class="disponibilidad-header"><p class="section-label">Próximos eventos</p><div class="red-divider"></div><h2 class="section-title">DISPONIBILIDAD</h2></div>
+    <div id="upcoming-events" class="upcoming-events-list">
+      <!-- Eventos se renderizarán aquí -->
     </div>
   </section>
-</section>
-
-<!-- ══ ADMIN ══ -->
-<section id="page-admin" class="page">
-  <div class="admin-layout">
-    <aside class="admin-sidebar">
-      <div class="logo admin-logo"> <img src="assets\img/02.png" alt="logo de Internacional Music"  width="300"> </div>
-      <p class="admin-role">Panel de administración</p>
-      <nav><ul class="admin-nav">
-        <li><a href="#" class="active" onclick="switchAdminTab('reservas',this);return false">▣ &nbsp;Reservas</a></li>
-        <li><a href="#" onclick="switchAdminTab('archivos',this);return false">⬡ &nbsp;Archivos</a></li>
-        <li><a href="#" onclick="switchAdminTab('portafolio-admin',this);return false">◈ &nbsp;Portafolio</a></li>
-        <li><a href="#" onclick="switchAdminTab('config',this);return false">⚙ &nbsp;Configuración</a></li>
-      </ul></nav>
-      <button class="btn-logout" onclick="handleLogout()">✕ Cerrar sesión</button>
-    </aside>
-    <main class="admin-content">
-      <div class="admin-header"><h2 id="admin-title">GESTIÓN DE RESERVAS</h2></div>
-      <div id="tab-reservas" class="admin-tab">
-        <div class="tab-row"><button class="tab active">Todas</button><button class="tab">Pendientes</button><button class="tab">Pagadas</button><button class="tab">Completadas</button></div>
-        <table class="reservas-table">
-          <thead><tr><th>Cliente</th><th>Evento</th><th>Fecha</th><th>Estado</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Eduar Hincapie</strong><br><span class="table-sub">+57 301 777 1649</span></td><td>Fiesta de Cumpleaños<br><span class="table-sub">DJ</span></td><td>25/10/2024</td><td><span class="badge badge-pending">Pendiente</span></td></tr>
-            <tr><td><strong>Eduar Hincapie</strong><br><span class="table-sub">+57 301 777 1649</span></td><td>Boda<br><span class="table-sub">Fotografía + DJ</span></td><td>15/11/2024</td><td><span class="badge badge-paid">Pagada</span></td></tr>
-            <tr><td><strong>Eduar Hincapie</strong><br><span class="table-sub">+57 301 777 1649</span></td><td>Fiesta Corporativa<br><span class="table-sub">Show + DJ</span></td><td>05/10/2024</td><td><span class="badge badge-done">Completada</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div id="tab-archivos" class="admin-tab hidden">
-        <div class="form-group" style="max-width:320px;margin-bottom:2rem;"><label>Seleccionar evento</label><select><option>Selecciona un evento</option><option>Boda María y Juan - 15/11/2024</option><option>Fiesta Corporativa ABC - 05/10/2024</option><option>15 Años Valentina - 20/09/2024</option></select></div>
-        <div class="upload-zone"><div class="upload-icon">↑</div><p>Arrastra archivos aquí o haz clic para seleccionar</p><span>Soporta JPG, PNG, MP4 — Máx. 100MB por archivo</span></div>
-        <div class="archivos-lista">
-          <div class="archivo-item"><div><div class="archivo-nombre">foto_pareja_01.jpg</div><div class="archivo-meta">1.2 MB · Imagen</div></div><span class="archivo-ok">✓</span></div>
-          <div class="archivo-item"><div><div class="archivo-nombre">foto_grupo_15.jpg</div><div class="archivo-meta">2.5 MB · Imagen</div></div><span class="archivo-ok">✓</span></div>
-          <div class="archivo-item"><div><div class="archivo-nombre">video_ceremonia.mp4</div><div class="archivo-meta">45.8 MB · Video</div></div><span class="archivo-ok">✓</span></div>
-        </div>
-        <div class="share-box"><p class="share-label">Enlace privado para el cliente</p><p class="share-desc">Este enlace permite al cliente ver y descargar sus archivos</p><div class="share-actions"><button class="btn-primary"><span>Enviar por email</span></button><button class="btn-outline" style="margin-left:.5rem;">Copiar enlace</button></div></div>
-      </div>
-      <div id="tab-portafolio-admin" class="admin-tab hidden">
-        <div class="portfolio-admin-list">
-          <div class="portfolio-admin-item"><div class="pai-info"><span class="pai-cat dj">DJ</span><strong>Fiesta Corporativa</strong><span class="pai-meta">Público · Diciembre 2024</span></div><div class="pai-actions"><button class="btn-outline">Editar</button><button class="btn-outline" style="margin-left:.5rem;">Eliminar</button></div></div>
-          <div class="portfolio-admin-item"><div class="pai-info"><span class="pai-cat foto">Fotografía</span><strong>Boda Ana & Carlos</strong><span class="pai-meta">Público · Noviembre 2024</span></div><div class="pai-actions"><button class="btn-outline">Editar</button><button class="btn-outline" style="margin-left:.5rem;">Eliminar</button></div></div>
-          <div class="portfolio-admin-item"><div class="pai-info"><span class="pai-cat show">Show</span><strong>Espectáculo de Luces</strong><span class="pai-meta">Privado · Octubre 2024</span></div><div class="pai-actions"><button class="btn-outline">Editar</button><button class="btn-outline" style="margin-left:.5rem;">Eliminar</button></div></div>
-        </div>
-        <button class="btn-primary" style="margin-top:2rem;"><span>+ Agregar nuevo elemento</span></button>
-      </div>
-      <div id="tab-config" class="admin-tab hidden">
-        <div class="config-grid">
-          <div class="config-card">
-            <h4 class="config-card-title">Configuración de la cuenta</h4>
-            <form style="display:flex;flex-direction:column;gap:1rem;">
-              <div class="form-group"><label>Usuario</label><input type="text" placeholder="admin"></div>
-              <div class="form-group"><label>Correo</label><input type="email" placeholder="contacto@internacionalmusic.com"></div>
-              <div class="form-group"><label>Contraseña actual</label><input type="password"></div>
-              <div class="form-group"><label>Nueva contraseña</label><input type="password"></div>
-              <button type="button" class="btn-primary"><span>Guardar cambios</span></button>
-            </form>
-          </div>
-          <div class="config-card">
-            <h4 class="config-card-title">Integraciones</h4>
-            <div class="integracion-item"><div class="integracion-header"><strong>Stripe</strong><span class="integracion-desc">Pagos con tarjeta</span></div><div class="form-group"><label>API Key</label><input type="password" placeholder="Solo en servidor / entorno seguro" autocomplete="off"></div></div>
-            <div class="integracion-item"><div class="integracion-header"><strong>Amazon S3</strong><span class="integracion-desc">Almacenamiento en la nube</span></div><div class="form-group"><label>Bucket</label><input type="text" placeholder="sinergia-media"></div></div>
-            <div class="integracion-item"><div class="integracion-header"><strong>Email SMTP</strong><span class="integracion-desc">Correos automatizados</span></div><div class="form-group"><label>Servidor</label><input type="text" placeholder="smtp.tudominio.co"></div></div>
-            <button type="button" class="btn-primary" style="margin-top:1rem;"><span>Guardar configuraciones</span></button>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
 </section>
 
 </main>
@@ -1203,7 +1148,7 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
 </script>
 <script>
 (function initReservasCalendar(){
-  document.addEventListener('DOMContentLoaded', function(){
+  document.addEventListener('DOMContentLoaded', async function(){
     var calEl = document.getElementById('calendar');
     if (!calEl || typeof FullCalendar === 'undefined') return;
 
@@ -1213,11 +1158,7 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
     var now = new Date();
     var y = now.getFullYear();
     var m = String(now.getMonth() + 1).padStart(2, '0');
-    var eventosConfirmados = [
-      { title: 'OCUPADO', start: y + '-' + m + '-15', color: '#ff4444' },
-      { title: 'OCUPADO', start: y + '-' + m + '-20', color: '#ff4444' },
-      { title: 'OCUPADO', start: y + '-' + m + '-24', color: '#ff4444' },
-    ];
+    var eventosConfirmados = [];
 
     function dayIsBlocked(calendar, dateStr){
       if (eventosConfirmados.some(function(ev){ return ev && ev.start === dateStr; })) return true;
@@ -1251,18 +1192,17 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       fechaInput.min = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
     }
 
-    var gcalPlugin = typeof FullCalendar !== 'undefined' ? FullCalendar.GoogleCalendar : null;
-    if (!gcalPlugin){
-      setLoadingVisible(false);
-      return;
+    // Carga segura de eventos de Google Calendar y formato válido para FullCalendar
+    try {
+      await loadGapi();
+    } catch (err) {
+      console.error('Error cargando GAPI:', err);
     }
 
     var calendar = new FullCalendar.Calendar(calEl, {
-      plugins: [ gcalPlugin ],
       locale: 'es',
       initialView: 'dayGridMonth',
       initialDate: new Date(),
-      googleCalendarApiKey: 'AIzaSyD3ggcyE2-QrJviYnhmNMhPJAZmWrLK63k',
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
@@ -1270,19 +1210,35 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       },
       height: 'auto',
       fixedWeekCount: false,
+      validRange: {
+        start: new Date().toISOString().split('T')[0]
+      },
+      selectable: true,
+      unselectAuto: false,
+      selectMirror: true,
+      select: function(info) {
+        const today = new Date().toISOString().split('T')[0];
+        if (info.startStr < today) {
+          alert('Lo sentimos, no puedes seleccionar una fecha que ya ha pasado');
+          return;
+        }
+        if (dayIsBlocked(info.view.calendar, info.startStr)) {
+          alert('Esta fecha ya se encuentra reservada. Por favor, elige otro día o contáctanos para verificar disponibilidad');
+          return;
+        }
+        if (fechaInput) fechaInput.value = info.startStr;
+      },
+      unselect: function(info) {
+        if (fechaInput) fechaInput.value = '';
+      },
       eventSources: [
         {
-          googleCalendarId: '80f4c17d72eb0d7cbccb2d3019eaf7d4b044555dc18dae53e9a695f3611b7cbe@group.calendar.google.com',
+          events: listUpcomingEvents,
           className: 'fc-event-google',
           backgroundColor: '#141414',
           borderColor: '#d4af37',
-          textColor: '#ffffff',
-          failure: function(err){
-            setLoadingVisible(false);
-            if (typeof console !== 'undefined' && console.error) console.error('Google Calendar:', err);
-          }
-        },
-        { events: eventosConfirmados }
+          textColor: '#ffffff'
+        }
       ],
       eventSourceFailure: function(err){
         setLoadingVisible(false);
@@ -1290,15 +1246,9 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       },
       loading: function(isLoading){
         setLoadingVisible(!!isLoading);
-      },
-      dateClick: function(info){
-        if (dayIsBlocked(info.view.calendar, info.dateStr)) {
-          alert('Lo sentimos, esta fecha ya está reservada. Por favor elige otro día');
-          return;
-        }
-        if (fechaInput) fechaInput.value = info.dateStr;
       }
     });
+
     calendar.render();
     window._fcReservaCalendar = calendar;
 
@@ -1326,6 +1276,53 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       });
     }
   });
+})();
+</script>
+<script src="js/calendar-service.js"></script>
+<script>
+(function initDisponibilidad(){
+  document.addEventListener('DOMContentLoaded', function(){
+    loadGapi();
+    // Esperar un poco para que gapi se cargue
+    setTimeout(async () => {
+      const events = await listUpcomingEvents();
+      renderEvents(events);
+    }, 2000);
+  });
+
+  function renderEvents(events) {
+    const container = document.getElementById('upcoming-events');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (!Array.isArray(events) || events.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'event-item';
+      empty.innerHTML = '<p style="color: var(--texto-secundario); font-size: 1.1rem; text-align: center;">No hay eventos programados por el momento.</p>';
+      container.appendChild(empty);
+      return;
+    }
+
+    events.forEach(event => {
+      const eventDiv = document.createElement('div');
+      eventDiv.className = 'event-item';
+
+      const startRaw = event.start?.dateTime || event.start?.date;
+      const endRaw = event.end?.dateTime || event.end?.date;
+      const start = startRaw ? new Date(startRaw) : null;
+      const end = endRaw ? new Date(endRaw) : null;
+
+      const startDate = start ? start.toLocaleDateString('es-ES') : 'Fecha desconocida';
+      const startTime = start && event.start?.dateTime ? start.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'}) : 'Todo el día';
+      const endTime = end && event.end?.dateTime ? end.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'}) : '';
+
+      eventDiv.innerHTML = `
+        <h3 class="event-title">${event.summary || 'Evento sin título'}</h3>
+        <p class="event-date">${startDate} • ${startTime}${endTime ? ' a ' + endTime : ''}</p>
+      `;
+      container.appendChild(eventDiv);
+    });
+  }
 })();
 </script>
 </body>
