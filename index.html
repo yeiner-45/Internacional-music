@@ -1295,7 +1295,7 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
 </script>
 <script type="module">
 import { db, storage, auth } from './js/firebase-config.js';
-import { collection, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+import { collection, getDocs, query, where, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 import { ref, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
 
@@ -1461,8 +1461,26 @@ onAuthStateChanged(auth, (user) => {
       adminButtons.innerHTML = `
         <button id="create-folder-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--rojo); color: white; border: none; border-radius: 4px;">+ Crear Carpeta</button>
         <button id="upload-photos-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--rojo); color: white; border: none; border-radius: 4px;">↑ Subir Fotos</button>
+        <button id="test-upload-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--dorado); color: black; border: none; border-radius: 4px;">🧪 Prueba Escritura</button>
       `;
       document.body.appendChild(adminButtons);
+
+      // Event listeners
+      document.getElementById('test-upload-btn').addEventListener('click', async () => {
+        try {
+          const docRef = await addDoc(collection(db, 'albumes'), {
+            titulo: 'Prueba de Escritura',
+            descripcion: 'Documento de prueba subido desde el sitio',
+            fecha: new Date().toISOString(),
+            admin: user.email
+          });
+          alert('Documento subido exitosamente: ' + docRef.id);
+        } catch (error) {
+          alert('Error al subir documento: ' + error.message);
+        }
+      });
+
+      // Aquí puedes agregar listeners para create-folder-btn y upload-photos-btn
     }
   } else {
     if (adminButtons) {
