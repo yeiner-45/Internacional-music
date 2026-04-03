@@ -1122,11 +1122,7 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
     var now = new Date();
     var y = now.getFullYear();
     var m = String(now.getMonth() + 1).padStart(2, '0');
-    var eventosConfirmados = [
-      { title: 'OCUPADO', start: y + '-' + m + '-15', color: '#ff4444' },
-      { title: 'OCUPADO', start: y + '-' + m + '-20', color: '#ff4444' },
-      { title: 'OCUPADO', start: y + '-' + m + '-24', color: '#ff4444' },
-    ];
+    var eventosConfirmados = [];
 
     function dayIsBlocked(calendar, dateStr){
       if (eventosConfirmados.some(function(ev){ return ev && ev.start === dateStr; })) return true;
@@ -1161,14 +1157,10 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
     }
 
     // Carga segura de eventos de Google Calendar y formato válido para FullCalendar
-    var googleEvents = [];
     try {
       await loadGapi();
-      googleEvents = await listUpcomingEvents();
-      if (!Array.isArray(googleEvents)) googleEvents = [];
     } catch (err) {
-      console.error('Error cargando eventos de Google Calendar:', err);
-      googleEvents = [];
+      console.error('Error cargando GAPI:', err);
     }
 
     var calendar = new FullCalendar.Calendar(calEl, {
@@ -1184,13 +1176,12 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       fixedWeekCount: false,
       eventSources: [
         {
-          events: googleEvents,
+          events: listUpcomingEvents,
           className: 'fc-event-google',
           backgroundColor: '#141414',
           borderColor: '#d4af37',
           textColor: '#ffffff'
-        },
-        { events: Array.isArray(eventosConfirmados) ? eventosConfirmados : [] }
+        }
       ],
       eventSourceFailure: function(err){
         setLoadingVisible(false);
@@ -1207,6 +1198,7 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
         if (fechaInput) fechaInput.value = info.dateStr;
       }
     });
+
     calendar.render();
     window._fcReservaCalendar = calendar;
 
