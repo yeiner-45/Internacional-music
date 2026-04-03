@@ -1301,6 +1301,10 @@ import { onAuthStateChanged, signInWithEmailAndPassword } from 'https://www.gsta
 
 // Función para cargar portafolio
 async function loadPortfolio() {
+  if (!auth.currentUser) {
+    console.warn('Usuario no autenticado. No se puede cargar portafolio.');
+    return;
+  }
   const categories = ['dj', 'foto', 'show'];
   for (const cat of categories) {
     const q = query(collection(db, 'portafolio'), where('categoria', '==', cat));
@@ -1321,6 +1325,10 @@ async function loadPortfolio() {
 
 // Función para cargar clientes
 async function loadClientes() {
+  if (!auth.currentUser) {
+    console.warn('Usuario no autenticado. No se puede cargar clientes.');
+    return;
+  }
   const q = query(collection(db, 'portafolio'), where('tipo', '==', 'cliente'));
   const querySnapshot = await getDocs(q);
   const container = document.getElementById('clientes-folders');
@@ -1490,34 +1498,39 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Verificar parámetro admin
-if (window.location.search.includes('admin=true')) {
-  showAdminLoginModal();
+try {
+  // Verificar parámetro admin
+  if (window.location.search.includes('admin=true')) {
+    showAdminLoginModal();
+  }
+
+  // Manejar filtros
+document.querySelectorAll('.filtro').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filtro').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      const filter = this.dataset.filter;
+      document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-clientes').forEach(el => el.style.display = 'none');
+      if (filter === 'todos') {
+        document.querySelector('.portfolio-section-dj').style.display = 'block';
+        document.querySelector('.portfolio-section-foto').style.display = 'block';
+        document.querySelector('.portfolio-section-show').style.display = 'block';
+        loadPortfolio();
+      } else if (filter === 'clientes') {
+        document.querySelector('.portfolio-clientes').style.display = 'block';
+        loadClientes();
+      }
+    });
+  });
+
+  // Cargar inicial
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.filtro[data-filter="todos"]').click();
+  });
+} catch (error) {
+  console.error('Error en la inicialización de Portafolio:', error);
 }
 
-// Manejar filtros
-document.querySelectorAll('.filtro').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.filtro').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-    const filter = this.dataset.filter;
-    document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-clientes').forEach(el => el.style.display = 'none');
-    if (filter === 'todos') {
-      document.querySelector('.portfolio-section-dj').style.display = 'block';
-      document.querySelector('.portfolio-section-foto').style.display = 'block';
-      document.querySelector('.portfolio-section-show').style.display = 'block';
-      loadPortfolio();
-    } else if (filter === 'clientes') {
-      document.querySelector('.portfolio-clientes').style.display = 'block';
-      loadClientes();
-    }
-  });
-});
-
-// Cargar inicial
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('.filtro[data-filter="todos"]').click();
-});
 </script>
 </body>
 </html>

@@ -37,13 +37,13 @@ async function listUpcomingEvents() {
       orderBy: 'startTime',
     });
 
-    console.log('Respuesta completa de Google:', response);
+    console.log('Estructura de respuesta:', response);
 
-    const items = (response && response.result && response.result.items) ? response.result.items : [];
-    console.log('Eventos recibidos:', items);
+    const events = response?.result?.items ? response.result.items : [];
+    console.log('Eventos recibidos:', events);
 
     // Formato compatible con FullCalendar
-    const formatted = items.map(item => ({
+    const formatted = events.map(item => ({
       title: '📅 Fecha Reservada',
       start: item.start?.dateTime || item.start?.date || null,
       end: item.end?.dateTime || item.end?.date || null,
