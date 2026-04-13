@@ -6,7 +6,10 @@ import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/12.12.0/f
  * Redirect unauthenticated users to login page
  */
 onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = '/admin/login.html';
+  const path = window.location.pathname;
+  const isProtectedRoute = path.includes('/admin/') || path.includes('/dashboard');
+
+  if (!user && isProtectedRoute) {
+    window.location.href = '../login.html';
   }
 });
