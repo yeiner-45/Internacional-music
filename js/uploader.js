@@ -1,6 +1,5 @@
-import { db, storage } from './firebase-config.js';
-import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
-import { ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js';
+import { storage } from './firebase-config.js';
+import { ref, uploadBytesResumable, getDownloadURL } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js';
 
 export function setupAlbumUploader() {
   const albumForm = document.getElementById('albumForm');
@@ -121,22 +120,20 @@ export function setupAlbumUploader() {
     }
 
     try {
-      await addDoc(collection(db, 'albumes'), {
-        title: eventName,
-        date: eventDate,
-        category,
-        photos: uploadedUrls,
-        createdAt: new Date()
-      });
-
-      showStatus('Álbum guardado exitosamente.', false);
+      // Images uploaded successfully to Storage
+      console.log('Fotos cargadas exitosamente:', uploadedUrls);
+      
+      // TODO: Implement database logic for storing album metadata
+      // This will be reconnected when new database service is configured
+      
+      showStatus('Fotos cargadas exitosamente al almacenamiento.', false);
       albumForm.reset();
       files = [];
       updateThumbnailView();
       setProgress(0);
     } catch (error) {
-      console.error(error);
-      showStatus('Error al guardar álbum en Firestore. Intenta nuevamente.', true);
+      console.error('Error durante la carga:', error);
+      showStatus('Error al cargar las fotos. Intenta nuevamente.', true);
     }
   });
 }

@@ -1,21 +1,20 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
-import { getStorage } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+import { getStorage } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js';
 
+// Firebase configuration - NEW PROJECT
 const firebaseConfig = {
-  apiKey: "AIzaSyDHk7BWXVvOg6WynA7PITw8ERGXtvrlVZ8",
-  authDomain: "internacional-music-web.firebaseapp.com",
-  projectId: "internacional-music-web",
-  storageBucket: "internacional-music-web.firebasestorage.app",
-  messagingSenderId: "945485583026",
-  appId: "1:945485583026:web:b415b652ad969e98c66fab",
-  measurementId: "G-052JTKBR9S"
+  apiKey: "AIzaSyC1sb7sBjHBWDRqVDCLiTo9Yik8ZRqlLkc",
+  authDomain: "internacionalmusic-web.firebaseapp.com",
+  projectId: "internacionalmusic-web",
+  storageBucket: "internacionalmusic-web.firebasestorage.app",
+  messagingSenderId: "675305364253",
+  appId: "1:675305364253:web:471fa04d638758dbd41ff4"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { auth, db, storage };
+export { app, auth, storage };
