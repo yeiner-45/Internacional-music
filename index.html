@@ -1334,20 +1334,13 @@ function openGallery(clienteData) {
   document.body.appendChild(modal);
 }
 
-// Función para enviar Magic Link de acceso
+// Función para enviar Magic Link de acceso - ELIMINADA
+// REEMPLAZADA por el sistema seguro de Firebase Auth con email/password
+// Ahora se valida en /login.html con signInWithEmailAndPassword
 async function enviarLinkDeAcceso(email) {
-  console.log('[Magic Link] Enviando link de acceso a:', email);
-  
-  const actionCodeSettings = {
-    url: `${window.location.origin}/admin?admin=true`,
-    handleCodeInApp: true
-  };
-
-  try {
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-    console.log('[Magic Link] Link enviado exitosamente');
-    window.localStorage.setItem('emailForSignIn', email);
-    return { success: true };
+  console.warn('[DEPRECATED] enviarLinkDeAcceso ha sido reemplazado por Firebase Auth seguro');
+  return { success: false, error: 'Método obsoleto. Use el login seguro.' };
+}
   } catch (error) {
     console.error('[Magic Link] Error enviando link:', error);
     return { success: false, error: error.message };
@@ -1355,97 +1348,40 @@ async function enviarLinkDeAcceso(email) {
 }
 
 // Modal de Login Admin - PASSWORDLESS (Magic Links)
+// Función para enviar Magic Link de acceso - ELIMINADA
+// Esta función ha sido reemplazada por el sistema de Firebase Auth seguro
+// Ahora se usa signInWithEmailAndPassword en /login.html
+
 function showAdminLoginModal() {
-  const modal = document.createElement('div');
-  modal.id = 'admin-login-modal';
-  modal.style.position = 'fixed';
-  modal.style.inset = '0';
-  modal.style.background = 'rgba(0,0,0,0.9)';
-  modal.style.display = 'flex';
-  modal.style.alignItems = 'center';
-  modal.style.justifyContent = 'center';
-  modal.style.zIndex = '10001';
-  modal.innerHTML = `
-    <div style="background: var(--negro); border: 1px solid var(--rojo); padding: 2rem; border-radius: 8px; width: 400px; max-width: 90%;">
-      <h3 style="color: var(--dorado); text-align: center; margin-bottom: 1.5rem;">Acceso Administrador</h3>
-      <div id="login-form-container">
-        <form id="admin-login-form">
-          <div style="margin-bottom: 1.5rem;">
-            <label style="color: var(--blanco); display: block; margin-bottom: 0.5rem;">Correo Administrativo</label>
-            <input type="email" id="admin-email" required placeholder="tu-email@ejemplo.com" style="width: 100%; padding: 0.75rem; background: var(--gris-oscuro); border: 1px solid var(--borde-blanco); color: var(--blanco); border-radius: 4px; font-family: var(--fuente-cuerpo);">
-          </div>
-          <button type="submit" style="width: 100%; padding: 0.75rem; background: var(--rojo); color: var(--blanco); border: none; border-radius: 4px; cursor: pointer; font-weight: 600; letter-spacing: 0.1em;">Enviar Magic Link</button>
-        </form>
-        <div id="login-error" style="color: var(--estado-error); margin-top: 1rem; display: none; text-align: center; font-size: 0.9rem;"></div>
-      </div>
-      <div id="login-success" style="color: var(--estado-exito); display: none; text-align: center;">
-        <p style="margin-bottom: 1rem;">✓ Link enviado</p>
-        <p style="color: var(--texto-secundario); font-size: 0.85rem;">Revisa tu bandeja de entrada y haz clic en el enlace para acceder.</p>
-      </div>
-      <button onclick="closeAdminModal()" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--blanco); font-size: 1.5rem; cursor: pointer;">×</button>
-    </div>
-  `;
-  document.body.appendChild(modal);
-
-  const form = modal.querySelector('#admin-login-form');
-  const errorDiv = modal.querySelector('#login-error');
-  const successDiv = modal.querySelector('#login-success');
-  const formContainer = modal.querySelector('#login-form-container');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('admin-email').value.trim();
-    errorDiv.style.display = 'none';
-
-    const result = await enviarLinkDeAcceso(email);
-    
-    if (result.success) {
-      formContainer.style.display = 'none';
-      successDiv.style.display = 'block';
-      setTimeout(() => closeAdminModal(), 3000);
-    } else {
-      errorDiv.textContent = result.error || 'Error al enviar el link. Intenta de nuevo.';
-      errorDiv.style.display = 'block';
-    }
-  });
+  // REDIRIGIR AL NUEVO SISTEMA SEGURO
+  window.location.href = 'login.html';
 }
 
 function closeAdminModal() {
-  const modal = document.getElementById('admin-login-modal');
-  if (modal) modal.remove();
-  // Limpiar URL
-  const url = new URL(window.location);
-  url.searchParams.delete('admin');
-  window.history.replaceState({}, '', url);
+  // Función obsoleta - redirigir al nuevo sistema
+  window.location.href = 'login.html';
 }
 
-// Detectar y procesar Magic Link al cargar la página
-if (isSignInWithEmailLink(auth, window.location.href)) {
-  console.log('[Magic Link] Detectado link de acceso en URL');
-  const emailForSignIn = window.localStorage.getItem('emailForSignIn');
-  
-  if (emailForSignIn) {
-    signInWithEmailLink(auth, emailForSignIn, window.location.href)
-      .then(() => {
-        console.log('[Magic Link] Usuario autenticado exitosamente:', emailForSignIn);
-        window.localStorage.removeItem('emailForSignIn');
-        // Limpiar URL del parámetro de magic link
-        const url = new URL(window.location);
-        url.searchParams.delete('oobCode');
-        window.history.replaceState({}, '', url);
-      })
-      .catch((error) => {
-        console.error('[Magic Link] Error completando autenticación:', error);
-      });
-  } else {
-    console.warn('[Magic Link] Email no encontrado en localStorage');
-  }
-}
+// SISTEMA DE MAGIC LINKS ELIMINADO
+// REEMPLAZADO por Firebase Auth seguro con email/password
+// La autenticación ahora se maneja en /login.html
 
-// Modo Admin
+// Modo Admin - Actualizado para usar el nuevo sistema
 let adminButtons = null;
 onAuthStateChanged(auth, (user) => {
-  if (user && user.email === 'tu-correo-admin@ejemplo.com') { // Reemplaza con tu correo real
+  // Verificar si es el administrador autorizado
+  const isAdmin = user && user.email === 'mezayeiner66@gmail.com';
+
+  if (isAdmin) {
+    if (!adminButtons) {
+      adminButtons = document.createElement('div');
+      adminButtons.style.position = 'fixed';
+      adminButtons.style.bottom = '2rem';
+      adminButtons.style.right = '2rem';
+      adminButtons.style.zIndex = '9999';
+      adminButtons.innerHTML = `
+        <button id="create-folder-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--rojo); color: white; border: none; border-radius: 4px;">+ Crear Carpeta</button>
+        <button id="upload-photos-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--rojo); color: white; border: none; border-radius: 4px;">↑ Subir Fotos</button>
     if (!adminButtons) {
       adminButtons = document.createElement('div');
       adminButtons.style.position = 'fixed';
@@ -1499,9 +1435,16 @@ onAuthStateChanged(auth, (user) => {
 });
 
 try {
-  // Verificar parámetro admin
+  // Nueva lógica: Redirigir ?admin=true a /login
   if (window.location.search.includes('admin=true')) {
-    showAdminLoginModal();
+    // Limpiar la URL y redirigir al sistema de login seguro
+    const url = new URL(window.location);
+    url.searchParams.delete('admin');
+    window.history.replaceState({}, '', url.pathname);
+
+    // Redirigir al login seguro
+    window.location.href = 'login.html';
+    return; // Salir para evitar que se ejecute el resto del código
   }
 
   // Manejar filtros
