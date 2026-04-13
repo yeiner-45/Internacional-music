@@ -1,10 +1,14 @@
 // Google Calendar Service
 
-const API_KEY = 'AIzaSyDyaYUjcNuQMnJqUKs8Q2ZQKqG5Aqh2EHE';
+const API_KEY = 'AIzaSyD3ggcyE2-QrJviYnhmNMhPJAZmWrLK63k';
 
 const CALENDAR_ID = '80f4c17d72eb0d7cbccb2d3019eaf7d4b044555dc18dae53e9a695f3611b7cbe@group.calendar.google.com';
 
-function loadGapi() {
+/**
+ * Load Google API client
+ * @returns {Promise} Resolves when GAPI is loaded
+ */
+export function loadGapi() {
   return new Promise((resolve, reject) => {
     gapi.load('client', async () => {
       try {
@@ -17,6 +21,10 @@ function loadGapi() {
   });
 }
 
+/**
+ * Initialize Google API client
+ * @returns {Promise} Resolves when client is initialized
+ */
 function initClient() {
   return gapi.client.init({
     apiKey: API_KEY,
@@ -26,14 +34,18 @@ function initClient() {
   });
 }
 
-async function listUpcomingEvents() {
+/**
+ * List upcoming events from Google Calendar
+ * @returns {Promise<Array>} Array of formatted events for FullCalendar
+ */
+export async function listUpcomingEvents() {
   try {
     const response = await gapi.client.calendar.events.list({
       calendarId: CALENDAR_ID,
       timeMin: new Date().toISOString(),
       showDeleted: false,
       singleEvents: true,
-      maxResults: 5,
+      maxResults: 10,
       orderBy: 'startTime',
     });
 
@@ -59,5 +71,6 @@ async function listUpcomingEvents() {
   }
 }
 
+// Legacy global exports for backward compatibility
 window.loadGapi = loadGapi;
 window.listUpcomingEvents = listUpcomingEvents;

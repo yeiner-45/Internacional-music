@@ -1229,9 +1229,14 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
 </script>
 <script type="module">
 import { db, storage, auth } from './js/firebase-config.js';
-import { collection, getDocs, query, where, addDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
-import { ref, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+import { collection, getDocs, query, where, addDoc } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
+import { ref, getDownloadURL } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
+import { loadGapi, listUpcomingEvents } from './js/calendar-service.js';
+
+// Make calendar functions globally available
+window.loadGapi = loadGapi;
+window.listUpcomingEvents = listUpcomingEvents;
 
 // Función para cargar portafolio
 async function loadPortfolio() {
