@@ -44,6 +44,28 @@
     .btn-primary{display:inline-block;background:var(--rojo);color:var(--blanco);border:none;padding:1rem 2.5rem;font-family:var(--fuente-cuerpo);font-size:.8rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;position:relative;overflow:hidden;cursor:pointer;transition:var(--trans-media);width:100%}
     .btn-primary::after{content:'';position:absolute;inset:0;background:var(--rojo-brillante);transform:translateX(-101%);transition:transform .3s ease}
     .btn-primary:hover::after{transform:translateX(0)} .btn-primary span{position:relative;z-index:1}
+
+    /* Estilos para álbumes recientes */
+    .album-item {
+      background: var(--gris-medio);
+      border: 1px solid var(--borde-blanco);
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .album-item h4 {
+      color: var(--blanco);
+      margin-bottom: 0.5rem;
+    }
+    .album-item p {
+      color: var(--texto-secundario);
+      margin: 0.25rem 0;
+      font-size: 0.9rem;
+    }
+    .album-item small {
+      color: var(--texto-apagado);
+      font-size: 0.8rem;
+    }
   </style>
 </head>
 <body>
@@ -83,10 +105,62 @@
     </form>
   </div>
 
+  <!-- Recent Albums Section -->
+  <div class="recent-albums-section" style="margin-top: 3rem;">
+    <div id="recent-albums" style="background: var(--gris-oscuro); padding: 2rem; border: 1px solid var(--borde-rojo); border-radius: 8px;">
+      <p>Cargando álbumes recientes...</p>
+    </div>
+  </div>
+
   <script type="module">
     import '../js/auth-status.js';
     import { setupAlbumUploader } from '../js/uploader.js';
+    import { db } from '../js/firebase-config.js';
+    import { collection, getDocs, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
+
+    // Setup album uploader
     setupAlbumUploader();
+
+    // Load recent albums
+    async function loadRecentAlbums() {
+      try {
+        const q = query(collection(db, 'albumes'), orderBy('createdAt', 'desc'), limit(10));
+        const querySnapshot = await getDocs(q);
+
+        const albumsContainer = document.getElementById('recent-albums');
+        if (!albumsContainer) return;
+
+        albumsContainer.innerHTML = '<h3>Álbumes Recientes</h3>';
+
+        if (querySnapshot.empty) {
+          albumsContainer.innerHTML += '<p>No hay álbumes subidos aún.</p>';
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const albumDiv = document.createElement('div');
+          albumDiv.className = 'album-item';
+          albumDiv.innerHTML = `
+            <h4>${data.title}</h4>
+            <p>Categoría: ${data.category}</p>
+            <p>Fecha: ${data.date}</p>
+            <p>Fotos: ${data.photos ? data.photos.length : 0}</p>
+            <small>Creado: ${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</small>
+          `;
+          albumsContainer.appendChild(albumDiv);
+        });
+      } catch (error) {
+        console.error('Error cargando álbumes:', error);
+        const albumsContainer = document.getElementById('recent-albums');
+        if (albumsContainer) {
+          albumsContainer.innerHTML = '<p>Error al cargar álbumes. Revisa la consola para más detalles.</p>';
+        }
+      }
+    }
+
+    // Load albums on page load
+    document.addEventListener('DOMContentLoaded', loadRecentAlbums);
   </script>
 </body>
 </html>
