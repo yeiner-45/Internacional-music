@@ -1143,9 +1143,12 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
 
     // Carga segura de eventos de Google Calendar y formato válido para FullCalendar
     try {
+      console.log('Inicializando Google Calendar API...');
       await loadGapi();
+      console.log('Google Calendar API inicializado correctamente');
     } catch (err) {
       console.error('Error cargando GAPI:', err);
+      // Continuar sin GAPI - el calendario funcionará sin eventos bloqueados
     }
 
     var calendar = new FullCalendar.Calendar(calEl, {
@@ -1238,55 +1241,78 @@ import { loadGapi, listUpcomingEvents } from './js/calendar-service.js';
 window.loadGapi = loadGapi;
 window.listUpcomingEvents = listUpcomingEvents;
 
-// Función para cargar portafolio
+// Función para cargar portafolio (ahora público con manejo de errores)
 async function loadPortfolio() {
-  if (!auth.currentUser) {
-    console.warn('[Firestore] Usuario no autenticado. No se puede cargar portafolio.');
-    return;
-  }
-  console.log('[Auth] Leyendo portafolio con usuario:', auth.currentUser.email);
-  const categories = ['dj', 'foto', 'show'];
-  for (const cat of categories) {
-    const q = query(collection(db, 'albumes'), where('categoria', '==', cat));
-    const querySnapshot = await getDocs(q);
-    console.log(`[Firestore] Documentos en categoría "${cat}":`, querySnapshot.size);
-    const container = document.getElementById(`${cat}-container`);
-    container.innerHTML = '';
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      const img = document.createElement('img');
-      img.src = data.url;
-      img.alt = data.titulo || 'Imagen';
-      img.style.width = '100%';
-      img.style.borderRadius = '4px';
-      container.appendChild(img);
-    });
+  try {
+    // Intentar cargar con autenticación si está disponible
+    if (auth.currentUser) {
+      console.log('[Auth] Leyendo portafolio con usuario:', auth.currentUser.email);
+    } else {
+      console.log('[Public] Cargando portafolio público');
+    }
+
+    const categories = ['dj', 'foto', 'show'];
+    for (const cat of categories) {
+      try {
+        const q = query(collection(db, 'albumes'), where('categoria', '==', cat));
+        const querySnapshot = await getDocs(q);
+        console.log(`[Firestore] Documentos en categoría "${cat}":`, querySnapshot.size);
+        const container = document.getElementById(`${cat}-container`);
+        if (container) {
+          container.innerHTML = '';
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const img = document.createElement('img');
+            img.src = data.url;
+            img.alt = data.titulo || 'Imagen';
+            img.style.width = '100%';
+            img.style.borderRadius = '4px';
+            container.appendChild(img);
+          });
+        }
+      } catch (error) {
+        console.warn(`[Firestore] Error cargando categoría "${cat}":`, error);
+        // Continuar con otras categorías aunque una falle
+      }
+    }
+  } catch (error) {
+    console.error('[Firestore] Error general cargando portafolio:', error);
+    // Mostrar mensaje de error al usuario si es necesario
   }
 }
 
-// Función para cargar clientes
+// Función para cargar clientes (ahora público con manejo de errores)
 async function loadClientes() {
-  if (!auth.currentUser) {
-    console.warn('[Firestore] Usuario no autenticado. No se puede cargar clientes.');
-    return;
+  try {
+    // Intentar cargar con autenticación si está disponible
+    if (auth.currentUser) {
+      console.log('[Auth] Leyendo clientes con usuario:', auth.currentUser.email);
+    } else {
+      console.log('[Public] Cargando clientes públicos');
+    }
+
+    const q = query(collection(db, 'albumes'), where('tipo', '==', 'cliente'));
+    const querySnapshot = await getDocs(q);
+    console.log('[Firestore] Documentos de clientes encontrados:', querySnapshot.size);
+    const container = document.getElementById('clientes-folders');
+    if (container) {
+      container.innerHTML = '';
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const folder = document.createElement('div');
+        folder.className = 'folder';
+        folder.innerHTML = `
+          <div class="folder-icon">📁</div>
+          <div class="folder-name">${data.titulo}</div>
+        `;
+        folder.addEventListener('click', () => openGallery(data));
+        container.appendChild(folder);
+      });
+    }
+  } catch (error) {
+    console.error('[Firestore] Error cargando clientes:', error);
+    // Mostrar mensaje de error al usuario si es necesario
   }
-  console.log('[Auth] Leyendo clientes con usuario:', auth.currentUser.email);
-  const q = query(collection(db, 'albumes'), where('tipo', '==', 'cliente'));
-  const querySnapshot = await getDocs(q);
-  console.log('[Firestore] Documentos de clientes encontrados:', querySnapshot.size);
-  const container = document.getElementById('clientes-folders');
-  container.innerHTML = '';
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    const folder = document.createElement('div');
-    folder.className = 'folder';
-    folder.innerHTML = `
-      <div class="folder-icon">📁</div>
-      <div class="folder-name">${data.titulo}</div>
-    `;
-    folder.addEventListener('click', () => openGallery(data));
-    container.appendChild(folder);
-  });
 }
 
 function openGallery(clienteData) {

@@ -1,5 +1,7 @@
 // Google Calendar Service
 
+// TODO: Verificar que esta API key corresponda al nuevo proyecto de Internacional Music
+// API Key actual: Asegúrate de que esté habilitada para Google Calendar API
 const API_KEY = 'AIzaSyD3ggcyE2-QrJviYnhmNMhPJAZmWrLK63k';
 
 const CALENDAR_ID = '80f4c17d72eb0d7cbccb2d3019eaf7d4b044555dc18dae53e9a695f3611b7cbe@group.calendar.google.com';
@@ -40,6 +42,12 @@ function initClient() {
  */
 export async function listUpcomingEvents() {
   try {
+    // Control de flujo: verificar que gapi.client.calendar esté disponible
+    if (!gapi || !gapi.client || !gapi.client.calendar) {
+      console.warn('Google Calendar API no está disponible. Esperando inicialización...');
+      return [];
+    }
+
     const response = await gapi.client.calendar.events.list({
       calendarId: CALENDAR_ID,
       timeMin: new Date().toISOString(),
