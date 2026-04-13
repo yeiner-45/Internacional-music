@@ -1,8 +1,7 @@
 // Google Calendar Service
 
-// TODO: Verificar que esta API key corresponda al nuevo proyecto de Internacional Music
-// API Key actual: Asegúrate de que esté habilitada para Google Calendar API
-const API_KEY = 'AIzaSyD3ggcyE2-QrJviYnhmNMhPJAZmWrLK63k';
+// API Key para Google Calendar API - Proyecto Internacional Music
+const API_KEY = 'AIzaSyAqZ-t0Pt-_bOiBChD7VR9GGyRliEw5miI';
 
 const CALENDAR_ID = '80f4c17d72eb0d7cbccb2d3019eaf7d4b044555dc18dae53e9a695f3611b7cbe@group.calendar.google.com';
 

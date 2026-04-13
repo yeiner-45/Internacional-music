@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Google Calendar API</title>
+    <script src="https://apis.google.com/js/api.js"></script>
+</head>
+<body>
+    <h1>Prueba de Google Calendar API</h1>
+    <div id="output"></div>
+    <button onclick="testCalendar()">Probar Calendar API</button>
+
+    <script>
+        // Google Calendar Service Test
+        const API_KEY = 'AIzaSyAqZ-t0Pt-_bOiBChD7VR9GGyRliEw5miI';
+        const CALENDAR_ID = '80f4c17d72eb0d7cbccb2d3019eaf7d4b044555dc18dae53e9a695f3611b7cbe@group.calendar.google.com';
+
+        function loadGapi() {
+            return new Promise((resolve, reject) => {
+                gapi.load('client', async () => {
+                    try {
+                        await initClient();
+                        resolve();
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            });
+        }
+
+        function initClient() {
+            return gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
+            }).then(() => {
+                console.log('GAPI client loaded');
+            });
+        }
+
+        async function listUpcomingEvents() {
+            try {
+                if (!gapi || !gapi.client || !gapi.client.calendar) {
+                    console.warn('Google Calendar API no está disponible. Esperando inicialización...');
+                    return [];
+                }
+
+                const response = await gapi.client.calendar.events.list({
+                    calendarId: CALENDAR_ID,
+                    timeMin: new Date().toISOString(),
+                    showDeleted: false,
+                    singleEvents: true,
+                    maxResults: 10,
+                    orderBy: 'startTime',
+                });
+
+                console.log('Estructura de respuesta:', response);
+                const events = response?.result?.items ? response.result.items : [];
+                console.log('Eventos recibidos:', events);
+
+                const formatted = events.map(item => ({
+                    title: '📅 Fecha Reservada',
+                    start: item.start?.dateTime || item.start?.date || null,
+                    end: item.end?.dateTime || item.end?.date || null,
+                    extendedProps: { original: item },
+                }));
+
+                return formatted;
+            } catch (error) {
+                console.error('Error fetching events:', error);
+                return [];
+            }
+        }
+
+        async function testCalendar() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>Cargando Google Calendar API...</p>';
+
+            try {
+                await loadGapi();
+                output.innerHTML += '<p>✅ GAPI cargado correctamente</p>';
+
+                const events = await listUpcomingEvents();
+                output.innerHTML += `<p>✅ Eventos obtenidos: ${events.length}</p>`;
+
+                if (events.length > 0) {
+                    output.innerHTML += '<p>📅 Eventos encontrados:</p><ul>';
+                    events.forEach(event => {
+                        output.innerHTML += `<li>${event.title} - ${event.start}</li>`;
+                    });
+                    output.innerHTML += '</ul>';
+                } else {
+                    output.innerHTML += '<p>📭 No hay eventos próximos</p>';
+                }
+
+                console.log('Events fetched successfully', events);
+                output.innerHTML += '<p style="color: green; font-weight: bold;">🎉 Events fetched successfully!</p>';
+
+            } catch (error) {
+                output.innerHTML += `<p style="color: red;">❌ Error: ${error.message}</p>`;
+                console.error('Test failed:', error);
+            }
+        }
+
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            setTimeout(testCalendar, 1000);
+        });
+    </script>
+</body>
+</html></content>
+<parameter name="filePath">c:\Proyecto pagina web\test-calendar.html
