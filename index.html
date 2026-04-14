@@ -1245,10 +1245,10 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
 })();
 </script>
 <script type="module">
+import './js/auth-status.js';
 import { db, storage, auth } from './js/firebase-config.js';
 import { collection, getDocs, query, where, addDoc } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
 import { ref, getDownloadURL } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
 import { loadGapi, listUpcomingEvents } from './js/calendar-service.js';
 
 // Make calendar functions globally available
@@ -1371,66 +1371,8 @@ function closeAdminModal() {
   window.location.href = 'login.html';
 }
 
-// SISTEMA DE MAGIC LINKS ELIMINADO
-// REEMPLAZADO por Firebase Auth seguro con email/password
-// La autenticación ahora se maneja en /login.html
-
-// Modo Admin - Actualizado para usar el nuevo sistema
-let adminButtons = null;
-onAuthStateChanged(auth, (user) => {
-  const isAdmin = user && user.email === 'mezayeiner66@gmail.com';
-
-  if (isAdmin) {
-    if (!adminButtons) {
-      adminButtons = document.createElement('div');
-      adminButtons.style.position = 'fixed';
-      adminButtons.style.bottom = '2rem';
-      adminButtons.style.right = '2rem';
-      adminButtons.style.zIndex = '9999';
-      adminButtons.style.display = 'flex';
-      adminButtons.style.flexDirection = 'column';
-      adminButtons.style.alignItems = 'flex-end';
-      adminButtons.style.gap = '0.5rem';
-      adminButtons.innerHTML = `
-        <button id="go-dashboard-btn" style="padding: 0.85rem 1.25rem; background: var(--dorado); color: #111; border: none; border-radius: 999px; font-weight: 700; box-shadow: 0 6px 18px rgba(0,0,0,0.18);">Ir al Panel</button>
-        <button id="logout-btn" style="padding: 0.85rem 1.25rem; background: #333; color: white; border: none; border-radius: 999px;">Cerrar Sesión</button>
-      `;
-      document.body.appendChild(adminButtons);
-
-      document.getElementById('go-dashboard-btn').addEventListener('click', () => {
-        window.location.href = 'admin/dashboard.html';
-      });
-
-      document.getElementById('logout-btn').addEventListener('click', async () => {
-        try {
-          await signOut(auth);
-          console.log('[Auth] Sesión cerrada');
-        } catch (error) {
-          console.error('[Auth] Error al cerrar sesión:', error.message);
-        }
-      });
-    }
-  } else {
-    if (adminButtons) {
-      adminButtons.remove();
-      adminButtons = null;
-    }
-  }
-});
-
+// auth-status.js centraliza la protección de rutas y el panel de administrador
 try {
-  // Nueva lógica: Redirigir ?admin=true a /login
-  if (window.location.search.includes('admin=true')) {
-    // Limpiar la URL y redirigir al sistema de login seguro
-    const url = new URL(window.location);
-    url.searchParams.delete('admin');
-    window.history.replaceState({}, '', url.pathname);
-
-    // Redirigir al login seguro
-    window.location.href = 'login.html';
-    return; // Salir para evitar que se ejecute el resto del código
-  }
-
   // Manejar filtros
 document.querySelectorAll('.filtro').forEach(btn => {
     btn.addEventListener('click', function() {
