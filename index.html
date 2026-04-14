@@ -1142,9 +1142,11 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
     }
 
     // Carga segura de eventos de Google Calendar y formato válido para FullCalendar
+    var gapiReady = false;
     try {
       console.log('Inicializando Google Calendar API...');
       await loadGapi();
+      gapiReady = true;
       console.log('Google Calendar API inicializado correctamente');
     } catch (err) {
       console.error('Error cargando GAPI:', err);
@@ -1185,7 +1187,19 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
       },
       eventSources: [
         {
-          events: listUpcomingEvents,
+          events: async function(fetchInfo, successCallback, failureCallback) {
+            if (!gapiReady) {
+              successCallback([]);
+              return;
+            }
+            try {
+              const events = await listUpcomingEvents();
+              successCallback(events);
+            } catch (err) {
+              console.error('Error cargando eventos de GAPI:', err);
+              failureCallback(err);
+            }
+          },
           className: 'fc-event-google',
           backgroundColor: '#141414',
           borderColor: '#d4af37',
@@ -1341,11 +1355,6 @@ async function enviarLinkDeAcceso(email) {
   console.warn('[DEPRECATED] enviarLinkDeAcceso ha sido reemplazado por Firebase Auth seguro');
   return { success: false, error: 'Método obsoleto. Use el login seguro.' };
 }
-  } catch (error) {
-    console.error('[Magic Link] Error enviando link:', error);
-    return { success: false, error: error.message };
-  }
-}
 
 // Modal de Login Admin - PASSWORDLESS (Magic Links)
 // Función para enviar Magic Link de acceso - ELIMINADA
@@ -1369,7 +1378,6 @@ function closeAdminModal() {
 // Modo Admin - Actualizado para usar el nuevo sistema
 let adminButtons = null;
 onAuthStateChanged(auth, (user) => {
-  // Verificar si es el administrador autorizado
   const isAdmin = user && user.email === 'mezayeiner66@gmail.com';
 
   if (isAdmin) {
@@ -1379,52 +1387,28 @@ onAuthStateChanged(auth, (user) => {
       adminButtons.style.bottom = '2rem';
       adminButtons.style.right = '2rem';
       adminButtons.style.zIndex = '9999';
+      adminButtons.style.display = 'flex';
+      adminButtons.style.flexDirection = 'column';
+      adminButtons.style.alignItems = 'flex-end';
+      adminButtons.style.gap = '0.5rem';
       adminButtons.innerHTML = `
-        <button id="create-folder-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--rojo); color: white; border: none; border-radius: 4px;">+ Crear Carpeta</button>
-        <button id="upload-photos-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--rojo); color: white; border: none; border-radius: 4px;">↑ Subir Fotos</button>
-    if (!adminButtons) {
-      adminButtons = document.createElement('div');
-      adminButtons.style.position = 'fixed';
-      adminButtons.style.bottom = '2rem';
-      adminButtons.style.right = '2rem';
-      adminButtons.style.zIndex = '9999';
-      adminButtons.innerHTML = `
-        <button id="create-folder-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--rojo); color: white; border: none; border-radius: 4px;">+ Crear Carpeta</button>
-        <button id="upload-photos-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--rojo); color: white; border: none; border-radius: 4px;">↑ Subir Fotos</button>
-        <button id="test-upload-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: var(--dorado); color: black; border: none; border-radius: 4px;">🧪 Prueba Escritura</button>
-        <button id="logout-btn" style="margin: 0.5rem; padding: 0.5rem 1rem; background: #555; color: white; border: none; border-radius: 4px;">🚪 Cerrar Sesión</button>
+        <button id="go-dashboard-btn" style="padding: 0.85rem 1.25rem; background: var(--dorado); color: #111; border: none; border-radius: 999px; font-weight: 700; box-shadow: 0 6px 18px rgba(0,0,0,0.18);">Ir al Panel</button>
+        <button id="logout-btn" style="padding: 0.85rem 1.25rem; background: #333; color: white; border: none; border-radius: 999px;">Cerrar Sesión</button>
       `;
       document.body.appendChild(adminButtons);
 
-      // Event listeners
-      document.getElementById('test-upload-btn').addEventListener('click', async () => {
-        try {
-          const docRef = await addDoc(collection(db, 'albumes'), {
-            titulo: 'Prueba de Escritura',
-            descripcion: 'Documento de prueba subido desde el sitio',
-            fecha: new Date().toISOString(),
-            admin: user.email
-          });
-          console.log('[Auth] Usuario autenticado:', user.email);
-          console.log('[Firestore] Documento creado:', docRef.id);
-          alert('Documento subido exitosamente: ' + docRef.id);
-        } catch (error) {
-          console.error('[Auth] Error de permisos:', error.message);
-          alert('Error al subir documento: ' + error.message);
-        }
+      document.getElementById('go-dashboard-btn').addEventListener('click', () => {
+        window.location.href = 'admin/dashboard.html';
       });
 
       document.getElementById('logout-btn').addEventListener('click', async () => {
         try {
           await signOut(auth);
           console.log('[Auth] Sesión cerrada');
-          alert('Sesión cerrada. Los botones de edición desaparecerán.');
         } catch (error) {
           console.error('[Auth] Error al cerrar sesión:', error.message);
         }
       });
-
-      // Aquí puedes agregar listeners para create-folder-btn y upload-photos-btn
     }
   } else {
     if (adminButtons) {
