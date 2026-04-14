@@ -142,9 +142,28 @@
     .portfolio-date{font-size:.72rem;color:var(--texto-apagado);margin-top:.25rem}
 
     /* Nuevos estilos para portafolio avanzado */
-    .portfolio-content{display:flex;flex-direction:column;gap:3rem}
-    .portfolio-section-title{color:var(--dorado);font-family:var(--fuente-titulo);font-size:2.5rem;margin-bottom:1rem;text-align:center}
-    .portfolio-container{background:rgba(139,0,0,.1);border-radius:8px;padding:1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem}
+    .portfolio-content{display:flex;flex-direction:column;gap:4rem}
+    .portfolio-section-title{color:var(--dorado);font-family:var(--fuente-titulo);font-size:2.2rem;margin-bottom:2rem;text-align:left;letter-spacing:.12em}
+    .portfolio-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
+    
+    /* Portfolio Item Card */
+    .portfolio-item-card{position:relative;overflow:hidden;border-radius:8px;background:var(--gris-oscuro);aspect-ratio:1;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,0.4);transition:all var(--trans-media);cursor:pointer}
+    .portfolio-item-card:hover{transform:translateY(-8px);box-shadow:0 16px 40px rgba(204,0,0,.2)}
+    
+    /* Portfolio Item Content */
+    .portfolio-item-content{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform var(--trans-lenta)}
+    .portfolio-item-card:hover .portfolio-item-content{transform:scale(1.08)}
+    
+    /* Placeholder */
+    .portfolio-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(204,0,0,.08) 0%,rgba(139,0,0,.04) 100%);border:2px dashed var(--borde-rojo);color:var(--texto-apagado);font-size:3rem;transition:all var(--trans-media)}
+    .portfolio-item-card:hover .portfolio-placeholder{border-color:var(--rojo);color:var(--texto-secundario)}
+    
+    /* Info Overlay */
+    .portfolio-item-info{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(10,10,10,.88) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:1.2rem;opacity:0;transition:opacity var(--trans-media);z-index:2}
+    .portfolio-item-card:hover .portfolio-item-info{opacity:1}
+    .portfolio-item-title{font-family:var(--fuente-titulo);font-size:1.1rem;color:var(--blanco);margin-bottom:.3rem;letter-spacing:.06em}
+    .portfolio-item-meta{font-size:.7rem;color:var(--texto-apagado);letter-spacing:.08em}
+    
     .folder{background:var(--gris-oscuro);border:1px solid var(--borde-blanco);border-radius:8px;padding:1rem;text-align:center;cursor:pointer;transition:background var(--trans-media)}
     .folder:hover{background:var(--rojo)}
     .folder-icon{font-size:3rem;margin-bottom:.5rem}
@@ -581,11 +600,19 @@
       #navbar{padding:1rem 1.5rem} #navbar ul{gap:1.5rem}
       .servicios-grid,.portfolio-grid,.reserva-inner,.footer-inner,.config-grid{grid-template-columns:1fr}
       .portfolio-item.featured{grid-column:span 1}
+      .portfolio-container{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
       .servicios-section,.portafolio-section,.reserva-section{padding:7rem 1.5rem 5rem}
       .admin-layout{grid-template-columns:1fr} .admin-sidebar{height:auto;position:static}
       #footer{padding:3rem 1.5rem} .footer-inner{grid-template-columns:1fr 1fr}
       .reservas-fc-inner{flex-direction:column}
       .reservas-fc-calendar-wrap,.reservas-fc-form-wrap{flex:1 1 100%;width:100%}
+    }
+    
+    @media(max-width:640px){
+      .portfolio-container{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
+      .portfolio-section-title{font-size:1.6rem;margin-bottom:1.5rem}
+      .portfolio-item-card{aspect-ratio:1}
+      .portfolio-item-title{font-size:.95rem}
     }
 
     /* ALBUM CARDS */
@@ -766,16 +793,20 @@
     <div class="portfolio-content">
       <!-- Secciones para Todos -->
       <div class="portfolio-section-dj" style="display: none;">
-        <h3 class="portfolio-section-title">DJ</h3>
+        <h3 class="portfolio-section-title">🎵 DJ</h3>
         <div class="portfolio-container" id="dj-container"></div>
       </div>
       <div class="portfolio-section-foto" style="display: none;">
-        <h3 class="portfolio-section-title">Fotografía</h3>
+        <h3 class="portfolio-section-title">📷 Fotografía</h3>
         <div class="portfolio-container" id="foto-container"></div>
       </div>
       <div class="portfolio-section-show" style="display: none;">
-        <h3 class="portfolio-section-title">Shows</h3>
+        <h3 class="portfolio-section-title">🎬 Shows</h3>
         <div class="portfolio-container" id="show-container"></div>
+      </div>
+      <div class="portfolio-section-video" style="display: none;">
+        <h3 class="portfolio-section-title">🎥 Video</h3>
+        <div class="portfolio-container" id="video-container"></div>
       </div>
       <!-- Vista de carpetas para clientes -->
       <div class="portfolio-clientes" style="display: none;">
@@ -1258,41 +1289,159 @@ window.listUpcomingEvents = listUpcomingEvents;
 // Función para cargar portafolio (ahora público con manejo de errores)
 async function loadPortfolio() {
   try {
-    // Intentar cargar con autenticación si está disponible
     if (auth.currentUser) {
       console.log('[Auth] Leyendo portafolio con usuario:', auth.currentUser.email);
     } else {
       console.log('[Public] Cargando portafolio público');
     }
 
-    const categories = ['dj', 'foto', 'show'];
+    const categories = ['dj', 'foto', 'show', 'video'];
+    
     for (const cat of categories) {
       try {
+        const container = document.getElementById(`${cat}-container`);
+        if (!container) continue;
+
+        // Limpiar y mostrar loading
+        container.innerHTML = '';
+        
+        // Crear 4 placeholders mientras carga
+        for (let i = 0; i < 4; i++) {
+          const placeholder = createPlaceholder();
+          container.appendChild(placeholder);
+        }
+
+        // Cargar datos de Firestore
         const q = query(collection(db, 'albumes'), where('categoria', '==', cat));
         const querySnapshot = await getDocs(q);
         console.log(`[Firestore] Documentos en categoría "${cat}":`, querySnapshot.size);
-        const container = document.getElementById(`${cat}-container`);
-        if (container) {
+
+        // Limpiar placeholders si hay contenido real
+        if (querySnapshot.size > 0) {
           container.innerHTML = '';
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const img = document.createElement('img');
-            img.src = data.url;
-            img.alt = data.titulo || 'Imagen';
-            img.style.width = '100%';
-            img.style.borderRadius = '4px';
-            container.appendChild(img);
-          });
         }
+
+        // Renderizar documentos reales
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const card = createPortfolioCard(data, cat);
+          container.appendChild(card);
+        });
+
+        // Si no hay documentos, mantener los placeholders
       } catch (error) {
         console.warn(`[Firestore] Error cargando categoría "${cat}":`, error);
-        // Continuar con otras categorías aunque una falle
       }
     }
   } catch (error) {
     console.error('[Firestore] Error general cargando portafolio:', error);
-    // Mostrar mensaje de error al usuario si es necesario
   }
+}
+
+function createPlaceholder() {
+  const div = document.createElement('div');
+  div.className = 'portfolio-item-card';
+  div.innerHTML = `
+    <div class="portfolio-placeholder">
+      <i class="fas fa-plus"></i>
+    </div>
+  `;
+  return div;
+}
+
+function createPortfolioCard(data, category) {
+  const card = document.createElement('div');
+  card.className = 'portfolio-item-card';
+  card.style.cursor = 'pointer';
+
+  // Determinar si es imagen o video
+  const isVideo = category === 'video' || (data.url && data.url.match(/\.(mp4|webm|ogg)$/i));
+  
+  // Crear contenido media
+  let mediaElement = '';
+  if (isVideo) {
+    mediaElement = `
+      <video class="portfolio-item-content" playsinline muted>
+        <source src="${data.url}" type="video/mp4">
+      </video>
+      <div class="portfolio-item-content" style="position:absolute;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--dorado);z-index:1;">
+        <i class="fas fa-play"></i>
+      </div>
+    `;
+  } else {
+    mediaElement = `<img class="portfolio-item-content" src="${data.url}" alt="${data.titulo || 'Portafolio'}" loading="lazy">`;
+  }
+
+  card.innerHTML = `
+    ${mediaElement}
+    <div class="portfolio-item-info">
+      <div class="portfolio-item-title">${data.titulo || 'Sin título'}</div>
+      <div class="portfolio-item-meta">${data.fecha ? new Date(data.fecha).toLocaleDateString('es-ES') : 'Fecha no disponible'}</div>
+    </div>
+  `;
+
+  // Agregar evento para expandir/modal
+  card.addEventListener('click', () => {
+    if (isVideo) {
+      openVideoModal(data.url, data.titulo);
+    } else {
+      openImageModal(data.url, data.titulo);
+    }
+  });
+
+  return card;
+}
+
+function openImageModal(src, title) {
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.95);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:10000;
+    backdrop-filter:blur(8px);
+  `;
+  modal.innerHTML = `
+    <div style="position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center;">
+      <img src="${src}" alt="${title}" style="max-width:100%;max-height:85vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+      <p style="color:var(--dorado);margin-top:1rem;text-align:center;font-family:var(--fuente-titulo);letter-spacing:.08em;">${title}</p>
+      <button onclick="this.closest('div').parentElement.remove()" style="position:absolute;top:1rem;right:1rem;width:40px;height:40px;border-radius:50%;background:var(--rojo);border:none;color:white;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+  });
+}
+
+function openVideoModal(src, title) {
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.95);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:10000;
+    backdrop-filter:blur(8px);
+  `;
+  modal.innerHTML = `
+    <div style="position:relative;width:90vw;max-width:1200px;display:flex;flex-direction:column;align-items:center;">
+      <video controls style="width:100%;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+        <source src="${src}" type="video/mp4">
+      </video>
+      <p style="color:var(--dorado);margin-top:1rem;text-align:center;font-family:var(--fuente-titulo);letter-spacing:.08em;">${title}</p>
+      <button onclick="this.closest('div').parentElement.remove()" style="position:absolute;top:1rem;right:1rem;width:40px;height:40px;border-radius:50%;background:var(--rojo);border:none;color:white;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+  });
 }
 
 // Función para cargar clientes (ahora público con manejo de errores)
@@ -1379,11 +1528,12 @@ document.querySelectorAll('.filtro').forEach(btn => {
       document.querySelectorAll('.filtro').forEach(b => b.classList.remove('active'));
       this.classList.add('active');
       const filter = this.dataset.filter;
-      document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-clientes').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-section-video, .portfolio-clientes').forEach(el => el.style.display = 'none');
       if (filter === 'todos') {
         document.querySelector('.portfolio-section-dj').style.display = 'block';
         document.querySelector('.portfolio-section-foto').style.display = 'block';
         document.querySelector('.portfolio-section-show').style.display = 'block';
+        document.querySelector('.portfolio-section-video').style.display = 'block';
         loadPortfolio();
       } else if (filter === 'clientes') {
         document.querySelector('.portfolio-clientes').style.display = 'block';
@@ -1394,7 +1544,8 @@ document.querySelectorAll('.filtro').forEach(btn => {
 
   // Cargar inicial
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.filtro[data-filter="todos"]').click();
+    const todoBtn = document.querySelector('.filtro[data-filter="todos"]');
+    if (todoBtn) todoBtn.click();
   });
 } catch (error) {
   console.error('Error en la inicialización de Portafolio:', error);
