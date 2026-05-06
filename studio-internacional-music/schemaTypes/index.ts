@@ -1,3 +1,3 @@
-import { postType } from './postType' // Importación nombrada entre llaves {}
+import { evento } from './evento'
 
-export const schemaTypes = [postType]
+export const schemaTypes = [evento]

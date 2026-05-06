@@ -1552,5 +1552,19 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
 </script>
+<script type="module" src="js/sanity-gallery.js"></script>
+<script>
+  // Cargar eventos de Sanity cuando se active el filtro "todos"
+  document.addEventListener('DOMContentLoaded', () => {
+    const todoBtn = document.querySelector('.filtro[data-filter="todos"]');
+    if (todoBtn) {
+      todoBtn.addEventListener('click', () => {
+        loadEventos();
+      });
+      // Cargar inicialmente
+      loadEventos();
+    }
+  });
+</script>
 </body>
 </html>
