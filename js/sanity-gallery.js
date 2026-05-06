@@ -2,7 +2,7 @@ import { createClient } from 'https://esm.sh/@sanity/client@6.15.11';
 
 // Configuración del cliente Sanity
 const client = createClient({
-  projectId: 'xpeoe7sp',
+  projectId: 'mdx23ztw',
   dataset: 'production',
   useCdn: true, // set to `false` to bypass the edge cache
   apiVersion: '2023-05-03', // use current date (YYYY-MM-DD) to target the latest API version
