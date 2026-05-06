@@ -21,7 +21,7 @@ async function loadEventos() {
     console.log('[Sanity Gallery] ⏳ Iniciando carga de eventos desde Sanity (Proyecto: mdx23ztw)...');
     
     // GROQ Query mejorada con validaciones
-    const query = `*[_type == "evento"]{
+    const query = `*[]
       titulo,
       categoria,
       "imagenUrl": imagenPrincipal.asset->url,
