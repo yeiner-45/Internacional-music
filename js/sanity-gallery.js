@@ -18,7 +18,7 @@ const CATEGORY_CONTAINERS = {
 // Función para cargar eventos desde Sanity - ÚNICA FUENTE DE DATOS
 async function loadEventos() {
   try {
-    console.log('[Sanity] Iniciando carga de eventos...');
+    console.log('[Sanity Gallery] ⏳ Iniciando carga de eventos desde Sanity (Proyecto: mdx23ztw)...');
     
     // GROQ Query mejorada con validaciones
     const query = `*[_type == "evento"]{
@@ -30,7 +30,11 @@ async function loadEventos() {
     }`;
     
     const eventos = await client.fetch(query);
-    console.log('[Sanity] Eventos cargados:', eventos.length);
+    console.log(`[Sanity Gallery] ✅ ${eventos.length} eventos cargados exitosamente`);
+
+    if (eventos.length === 0) {
+      console.warn('[Sanity Gallery] ⚠️ No hay eventos en Sanity. Verifica que tu dataset tenga documentos de tipo "evento"');
+    }
 
     // Limpiar todos los contenedores
     Object.values(CATEGORY_CONTAINERS).forEach(containerId => {
@@ -38,15 +42,18 @@ async function loadEventos() {
       if (container) {
         container.innerHTML = '';
       } else {
-        console.warn(`[Sanity] Contenedor no encontrado: ${containerId}`);
+        console.warn(`[Sanity Gallery] ⚠️ Contenedor no encontrado en HTML: #${containerId}`);
       }
     });
 
+    // Contadores por categoría
+    const categoryCounts = {};
+    
     // Poblar contenedores según categoría
     eventos.forEach((evento, index) => {
       try {
         if (!evento.categoria || !CATEGORY_CONTAINERS[evento.categoria]) {
-          console.warn(`[Sanity] Evento sin categoría válida (índice ${index}):`, evento);
+          console.warn(`[Sanity Gallery] ⚠️ Evento sin categoría válida (índice ${index}):`, evento.titulo);
           return;
         }
 
@@ -54,7 +61,7 @@ async function loadEventos() {
         const container = document.getElementById(containerId);
         
         if (!container) {
-          console.warn(`[Sanity] Contenedor no existe para categoría: ${evento.categoria}`);
+          console.warn(`[Sanity Gallery] ⚠️ Contenedor no existe para categoría: ${evento.categoria}`);
           return;
         }
 
@@ -63,20 +70,29 @@ async function loadEventos() {
         const mediaUrl = isVideo ? evento.videoUrl : evento.imagenUrl;
 
         if (!mediaUrl) {
-          console.warn(`[Sanity] Evento sin URL de media (índice ${index}):`, evento.titulo);
+          console.warn(`[Sanity Gallery] ⚠️ Evento sin URL de media (índice ${index}): ${evento.titulo}`);
           return;
         }
 
         const item = createPortfolioItem(evento, isVideo, mediaUrl);
         container.appendChild(item);
+        
+        // Contar por categoría
+        categoryCounts[evento.categoria] = (categoryCounts[evento.categoria] || 0) + 1;
       } catch (error) {
-        console.error(`[Sanity] Error procesando evento (índice ${index}):`, error);
+        console.error(`[Sanity Gallery] ❌ Error procesando evento (índice ${index}):`, error);
       }
     });
 
-    console.log('[Sanity] Carga completada exitosamente');
+    // Resumen final
+    console.log('[Sanity Gallery] 📊 Galería cargada por categoría:');
+    Object.entries(categoryCounts).forEach(([cat, count]) => {
+      console.log(`  • ${cat}: ${count} evento(s)`);
+    });
+    
+    console.log('[Sanity Gallery] ✨ Galería lista para visualizar');
   } catch (error) {
-    console.error('[Sanity] Error cargando eventos:', error);
+    console.error('[Sanity Gallery] ❌ Error fatal cargando eventos:', error);
   }
 }
 

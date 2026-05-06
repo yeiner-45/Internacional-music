@@ -147,7 +147,7 @@
     .portfolio-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
     
     /* Portfolio Item Card */
-    .portfolio-item-card{position:relative;overflow:hidden;border-radius:8px;background:var(--gris-oscuro);aspect-ratio:1;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,0.4);transition:all var(--trans-media);cursor:pointer}
+    .portfolio-item-card{position:relative;overflow:hidden;border-radius:8px;background:var(--gris-oscuro);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,0.4);transition:all var(--trans-media);cursor:pointer}
     .portfolio-item-card:hover{transform:translateY(-8px);box-shadow:0 16px 40px rgba(204,0,0,.2)}
     
     /* Portfolio Item Content */
@@ -1021,6 +1021,18 @@ function showPage(name){
   if(footer) footer.style.display=isAdmin?'none':'block';
   if(navbar) navbar.style.display=isAdmin?'none':'flex';
   window.scrollTo({top:0,behavior:'smooth'});
+  
+  // Cargar galería de Sanity cuando se navega al portafolio
+  if(requested==='portafolio'){
+    var sections = document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-section-video');
+    sections.forEach(function(section){
+      section.style.display = 'block';
+    });
+    if(window.loadEventos){
+      window.loadEventos();
+    }
+  }
+  
   if(requested==='reserva' && window._fcReservaCalendar){
     requestAnimationFrame(function(){
       try{ window._fcReservaCalendar.updateSize(); }catch(e){}
@@ -1287,10 +1299,34 @@ window.listUpcomingEvents = listUpcomingEvents;
 // Cargar galería de Sanity automáticamente al abrir la página - PORTAFOLIO PÚBLICO
 document.addEventListener('DOMContentLoaded', () => {
   console.log('[Portfolio] Cargando galería desde Sanity...');
+  
+  // Mostrar secciones de portafolio
+  const sections = document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-section-video');
+  sections.forEach(section => {
+    section.style.display = 'block';
+  });
+  
   if (window.loadEventos) {
     window.loadEventos();
   } else {
     console.error('[Portfolio] Función loadEventos no disponible. Verifica sanity-gallery.js');
+  }
+});
+
+// Forzar la carga de eventos de Sanity al iniciar completamente
+window.addEventListener('load', () => {
+  console.log('[Portfolio] Página completamente cargada. Verificando galería...');
+  if (typeof window.loadEventos === 'function') {
+    // Mostrar secciones nuevamente por seguridad
+    const sections = document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-section-video');
+    sections.forEach(section => {
+      if (section.style.display === 'none') {
+        section.style.display = 'block';
+      }
+    });
+    window.loadEventos();
+  } else {
+    console.error('[Portfolio] La función loadEventos no está disponible.');
   }
 });
 
