@@ -1,4 +1,4 @@
-import { createClient } from '@sanity/client';
+import { createClient } from 'https://esm.sh/@sanity/client@6.15.11';
 
 // Configuración del cliente Sanity
 const client = createClient({
