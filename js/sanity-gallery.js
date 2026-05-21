@@ -1,208 +1,253 @@
 import { createClient } from 'https://esm.sh/@sanity/client@6.15.11';
 
 const client = createClient({
-  projectId: 'mdx23ztw', // <--- USAMOS TU ID CORRECTO
+  projectId: 'xpeoe7sp',
   dataset: 'production',
-  useCdn: true, 
-  apiVersion: '2024-05-06', // Fecha de hoy
+  useCdn: true,
+  apiVersion: '2026-05-21',
 });
 
-// Mapping de categorías a IDs de contenedores
 const CATEGORY_CONTAINERS = {
-  'dj': 'dj-container',
-  'fotografia': 'foto-container',
-  'show': 'show-container',
-  'video': 'video-container'
+  dj: 'dj-container',
+  fotografia: 'foto-container',
+  show: 'show-container',
+  video: 'video-container',
 };
 
-// Función para cargar eventos desde Sanity - ÚNICA FUENTE DE DATOS
+let galleryLoaded = false;
+
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function formatDate(value) {
+  if (!value) return '';
+  const date = new Date(`${value}T00:00:00`);
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleDateString('es-CO', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function clearContainers() {
+  Object.values(CATEGORY_CONTAINERS).forEach((containerId) => {
+    const container = document.getElementById(containerId);
+    if (container) container.innerHTML = '';
+  });
+
+  const clientesContainer = document.getElementById('clientes-folders');
+  if (clientesContainer) clientesContainer.innerHTML = '';
+}
+
+function appendEmptyState(container, message) {
+  if (!container) return;
+  const empty = document.createElement('div');
+  empty.className = 'portfolio-empty-state';
+  empty.textContent = message;
+  container.appendChild(empty);
+}
+
 async function loadEventos() {
+  if (galleryLoaded) return;
+  galleryLoaded = true;
+
   try {
-    console.log('[Sanity Gallery] ⏳ Iniciando carga de eventos desde Sanity (Proyecto: mdx23ztw)...');
-    
-    // GROQ Query correcta para documentos de tipo 'evento'
-    const query = `*[_type == "evento"]{
-      titulo,
-      categoria,
-      "imagenUrl": imagenPrincipal.asset->url,
-      fechaEvento
-    }`;
-    
-    const eventos = await client.fetch(query);
-    console.log(`[Sanity Gallery] ✅ ${eventos.length} eventos cargados exitosamente`);
+    clearContainers();
 
-    if (eventos.length === 0) {
-      console.warn('[Sanity Gallery] ⚠️ No hay eventos en Sanity. Verifica que tu dataset tenga documentos de tipo "evento"');
-    }
-
-    // Limpiar todos los contenedores
-    Object.values(CATEGORY_CONTAINERS).forEach(containerId => {
-      const container = document.getElementById(containerId);
-      if (container) {
-        container.innerHTML = '';
-      } else {
-        console.warn(`[Sanity Gallery] ⚠️ Contenedor no encontrado en HTML: #${containerId}`);
-      }
-    });
-
-    // Contadores por categoría
-    const categoryCounts = {};
-    
-    // Poblar contenedores según categoría
-    eventos.forEach((evento, index) => {
-      try {
-        if (!evento.categoria || !CATEGORY_CONTAINERS[evento.categoria]) {
-          console.warn(`[Sanity Gallery] ⚠️ Evento sin categoría válida (índice ${index}):`, evento.titulo);
-          return;
+    const [eventos, albumes] = await Promise.all([
+      client.fetch(`*[_type == "evento"] | order(fechaEvento desc){
+        titulo,
+        categoria,
+        "imagenUrl": imagenPrincipal.asset->url,
+        "videoUrl": videoPrincipal.asset->url,
+        fechaEvento
+      }`),
+      client.fetch(`*[_type == "albumCliente" && publicado != false] | order(fechaEvento desc){
+        titulo,
+        cliente,
+        categoria,
+        fechaEvento,
+        "portadaUrl": portada.asset->url,
+        medios[]{
+          _type,
+          "url": asset->url
         }
+      }`),
+    ]);
 
-        const containerId = CATEGORY_CONTAINERS[evento.categoria];
-        const container = document.getElementById(containerId);
-        
-        if (!container) {
-          console.warn(`[Sanity Gallery] ⚠️ Contenedor no existe para categoría: ${evento.categoria}`);
-          return;
-        }
+    renderEventos(eventos);
+    renderAlbumes(albumes);
+    window.showPortfolioView?.('todos');
 
-        // Determinar si es video o imagen
-        const isVideo = evento.categoria === 'video' && evento.videoUrl;
-        const mediaUrl = isVideo ? evento.videoUrl : evento.imagenUrl;
-
-        if (!mediaUrl) {
-          console.warn(`[Sanity Gallery] ⚠️ Evento sin URL de media (índice ${index}): ${evento.titulo}`);
-          return;
-        }
-
-        const item = createPortfolioItem(evento, isVideo, mediaUrl);
-        container.appendChild(item);
-        
-        // Contar por categoría
-        categoryCounts[evento.categoria] = (categoryCounts[evento.categoria] || 0) + 1;
-      } catch (error) {
-        console.error(`[Sanity Gallery] ❌ Error procesando evento (índice ${index}):`, error);
-      }
-    });
-
-    // Resumen final
-    console.log('[Sanity Gallery] 📊 Galería cargada por categoría:');
-    Object.entries(categoryCounts).forEach(([cat, count]) => {
-      console.log(`  • ${cat}: ${count} evento(s)`);
-    });
-    
-    console.log('[Sanity Gallery] ✨ Galería lista para visualizar');
+    console.log(`[Sanity Gallery] ${eventos.length} trabajos y ${albumes.length} carpetas cargadas`);
   } catch (error) {
-    console.error('[Sanity Gallery] ❌ Error fatal cargando eventos:', error);
+    galleryLoaded = false;
+    console.error('[Sanity Gallery] Error cargando contenido:', error);
   }
 }
 
-// Función para crear item del portafolio
+function renderEventos(eventos) {
+  const categoryCounts = {};
+
+  eventos.forEach((evento) => {
+    const containerId = CATEGORY_CONTAINERS[evento.categoria];
+    const container = containerId ? document.getElementById(containerId) : null;
+    if (!container) return;
+
+    const isVideo = evento.categoria === 'video' && evento.videoUrl;
+    const mediaUrl = isVideo ? evento.videoUrl : evento.imagenUrl;
+    if (!mediaUrl) return;
+
+    container.appendChild(createPortfolioItem(evento, isVideo, mediaUrl));
+    categoryCounts[evento.categoria] = (categoryCounts[evento.categoria] || 0) + 1;
+  });
+
+  Object.entries(CATEGORY_CONTAINERS).forEach(([category, containerId]) => {
+    const container = document.getElementById(containerId);
+    if (container && !categoryCounts[category]) {
+      appendEmptyState(container, 'Contenido en preparacion.');
+    }
+  });
+}
+
+function renderAlbumes(albumes) {
+  const container = document.getElementById('clientes-folders');
+  if (!container) return;
+
+  if (!albumes.length) {
+    appendEmptyState(container, 'Carpetas de clientes en preparacion.');
+    return;
+  }
+
+  albumes.forEach((album) => {
+    if (!album.portadaUrl) return;
+    container.appendChild(createAlbumCard(album));
+  });
+}
+
 function createPortfolioItem(evento, isVideo, mediaUrl) {
   const item = document.createElement('div');
   item.className = 'portfolio-item-card';
-  item.style.cursor = 'pointer';
 
-  // Crear elemento media
-  let mediaElement = '';
-  if (isVideo) {
-    mediaElement = `
-      <video class="portfolio-item-content" style="width:100%; height:100%; object-fit:cover;">
-        <source src="${mediaUrl}" type="video/mp4">
-      </video>
-      <div style="position:absolute;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--dorado);z-index:1;inset:0;">
-        <i class="fas fa-play"></i>
-      </div>
-    `;
-  } else {
-    mediaElement = `<img class="portfolio-item-content" src="${mediaUrl}" alt="${evento.titulo}" style="width:100%; height:100%; object-fit:cover;" loading="lazy">`;
-  }
+  const title = evento.titulo || 'Sin titulo';
+  const safeTitle = escapeHtml(title);
+  const meta = [evento.categoria?.toUpperCase(), formatDate(evento.fechaEvento)].filter(Boolean).join(' / ');
 
   item.innerHTML = `
-    ${mediaElement}
-    <div class="portfolio-item-info" style="position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(10,10,10,.88) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:1.2rem;opacity:0;transition:opacity .35s ease;z-index:2;">
-      <div class="portfolio-item-title" style="font-family:var(--fuente-titulo);font-size:1.1rem;color:var(--blanco);margin-bottom:.3rem;letter-spacing:.06em;">${evento.titulo || 'Sin título'}</div>
-      <div class="portfolio-item-meta" style="font-size:.7rem;color:var(--texto-apagado);letter-spacing:.08em;">${evento.categoria.toUpperCase()}</div>
+    ${isVideo ? createVideoPreview(mediaUrl) : `<img class="portfolio-item-content" src="${escapeHtml(mediaUrl)}" alt="${safeTitle}" loading="lazy">`}
+    <div class="portfolio-item-info">
+      <div class="portfolio-item-title">${safeTitle}</div>
+      <div class="portfolio-item-meta">${escapeHtml(meta)}</div>
     </div>
   `;
 
-  // Agregar evento de clic para abrir modal
   item.addEventListener('click', () => {
-    if (isVideo) {
-      openVideoModal(mediaUrl, evento.titulo);
-    } else {
-      openImageModal(mediaUrl, evento.titulo);
-    }
-  });
-
-  // Agregar efecto hover
-  item.addEventListener('mouseenter', () => {
-    const info = item.querySelector('.portfolio-item-info');
-    if (info) info.style.opacity = '1';
-  });
-
-  item.addEventListener('mouseleave', () => {
-    const info = item.querySelector('.portfolio-item-info');
-    if (info) info.style.opacity = '0';
+    if (isVideo) openVideoModal(mediaUrl, title);
+    else openImageModal(mediaUrl, title);
   });
 
   return item;
 }
 
+function createAlbumCard(album) {
+  const card = document.createElement('button');
+  card.type = 'button';
+  card.className = 'portfolio-item-card album-folder-card';
 
-// Función para abrir modal de imagen
+  const title = album.titulo || 'Carpeta sin titulo';
+  const safeTitle = escapeHtml(title);
+  const count = Array.isArray(album.medios) ? album.medios.filter((item) => item?.url).length : 0;
+  const meta = [album.cliente, formatDate(album.fechaEvento), `${count} archivo${count === 1 ? '' : 's'}`]
+    .filter(Boolean)
+    .join(' / ');
+
+  card.innerHTML = `
+    <img class="portfolio-item-content" src="${escapeHtml(album.portadaUrl)}" alt="${safeTitle}" loading="lazy">
+    <div class="portfolio-item-info">
+      <div class="portfolio-item-title">${safeTitle}</div>
+      <div class="portfolio-item-meta">${escapeHtml(meta)}</div>
+    </div>
+  `;
+
+  card.addEventListener('click', () => openAlbumModal(album));
+  return card;
+}
+
+function createVideoPreview(src) {
+  return `
+    <video class="portfolio-item-content" muted playsinline preload="metadata">
+      <source src="${escapeHtml(src)}">
+    </video>
+    <div class="portfolio-play-icon"><i class="fas fa-play"></i></div>
+  `;
+}
+
+function createModal(title, content) {
+  const modal = document.createElement('div');
+  modal.className = 'media-modal';
+  modal.innerHTML = `
+    <div class="media-modal-inner">
+      ${content}
+      <p class="media-modal-title">${escapeHtml(title || '')}</p>
+      <button type="button" class="media-modal-close" aria-label="Cerrar">x</button>
+    </div>
+  `;
+
+  modal.querySelector('.media-modal-close').addEventListener('click', () => modal.remove());
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) modal.remove();
+  });
+  document.body.appendChild(modal);
+}
+
 function openImageModal(src, title) {
-  const modal = document.createElement('div');
-  modal.style.cssText = `
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.95);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:10000;
-    backdrop-filter:blur(8px);
-  `;
-  modal.innerHTML = `
-    <div style="position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center;">
-      <img src="${src}" alt="${title}" style="max-width:100%;max-height:85vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
-      <p style="color:var(--dorado);margin-top:1rem;text-align:center;font-family:var(--fuente-titulo);letter-spacing:.08em;">${title}</p>
-      <button onclick="this.closest('div').parentElement.remove()" style="position:absolute;top:1rem;right:1rem;width:40px;height:40px;border-radius:50%;background:var(--rojo);border:none;color:white;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) modal.remove();
-  });
+  createModal(title, `<img src="${escapeHtml(src)}" alt="${escapeHtml(title || '')}" class="media-modal-image">`);
 }
 
-// Función para abrir modal de video
 function openVideoModal(src, title) {
-  const modal = document.createElement('div');
-  modal.style.cssText = `
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.95);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:10000;
-    backdrop-filter:blur(8px);
-  `;
-  modal.innerHTML = `
-    <div style="position:relative;width:90vw;max-width:1200px;display:flex;flex-direction:column;align-items:center;">
-      <video controls style="width:100%;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
-        <source src="${src}" type="video/mp4">
-      </video>
-      <p style="color:var(--dorado);margin-top:1rem;text-align:center;font-family:var(--fuente-titulo);letter-spacing:.08em;">${title}</p>
-      <button onclick="this.closest('div').parentElement.remove()" style="position:absolute;top:1rem;right:1rem;width:40px;height:40px;border-radius:50%;background:var(--rojo);border:none;color:white;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
-    </div>
-  `;
-  document.body.appendChild(modal);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) modal.remove();
+  createModal(title, `
+    <video controls autoplay class="media-modal-video">
+      <source src="${escapeHtml(src)}">
+    </video>
+  `);
+}
+
+function openAlbumModal(album) {
+  const media = Array.isArray(album.medios) ? album.medios.filter((item) => item?.url) : [];
+  const content = media.length
+    ? `<div class="album-modal-grid">
+        ${media.map((item) => {
+          const isVideo = item._type === 'file' || item._type === 'video' || /\.(mp4|webm|mov|m4v)$/i.test(item.url);
+          return `
+            <button type="button" class="album-modal-item" data-url="${escapeHtml(item.url)}" data-type="${isVideo ? 'video' : 'image'}">
+              ${isVideo ? createVideoPreview(item.url) : `<img src="${escapeHtml(item.url)}" alt="${escapeHtml(album.titulo || '')}" loading="lazy">`}
+            </button>
+          `;
+        }).join('')}
+      </div>`
+    : '<div class="portfolio-empty-state">Esta carpeta aun no tiene archivos publicados.</div>';
+
+  createModal(album.titulo, content);
+
+  const modal = document.querySelector('.media-modal:last-child');
+  modal?.querySelectorAll('.album-modal-item').forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const url = button.getAttribute('data-url');
+      const type = button.getAttribute('data-type');
+      modal.remove();
+      if (type === 'video') openVideoModal(url, album.titulo);
+      else openImageModal(url, album.titulo);
+    });
   });
 }
 
-// Exportar funciones globalmente
 window.loadEventos = loadEventos;
 window.openImageModal = openImageModal;
 window.openVideoModal = openVideoModal;
+
+document.addEventListener('DOMContentLoaded', loadEventos);

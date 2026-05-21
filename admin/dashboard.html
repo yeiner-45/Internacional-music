@@ -2,165 +2,90 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Dashboard de administración de Internacional Music">
+  <meta name="description" content="Dashboard de administracion de Internacional Music">
   <title>Internacional Music - Admin Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
       --negro:#0a0a0a; --rojo:#cc0000; --rojo-brillante:#ff1a1a; --blanco:#f5f5f5;
-      --gris-oscuro:#1a1a1a; --gris-medio:#2a2a2a; --gris-suave:rgba(245,245,245,.07);
-      --texto-principal:rgba(245,245,245,1); --texto-secundario:rgba(245,245,245,.5); --texto-apagado:rgba(245,245,245,.25);
-      --borde-rojo:rgba(204,0,0,.2); --borde-blanco:rgba(245,245,245,.1);
-      --fuente-titulo:'Bebas Neue',sans-serif; --fuente-cuerpo:'Barlow',sans-serif;
-      --trans-rapida:.2s ease; --trans-media:.35s ease; --trans-lenta:.5s ease;
-      --estado-exito:#00c864; --estado-error:#ff4b4b; --estado-advertencia:#ffb020;
-      --bg-exito:rgba(0,200,100,.12); --bg-error:rgba(255,75,75,.12); --bg-advertencia:rgba(255,176,32,.12);
-      --dorado:#ffd700; --borde-dorado:rgba(255,215,0,.3);
+      --gris-oscuro:#1a1a1a; --gris-medio:#2a2a2a; --texto-secundario:rgba(245,245,245,.62);
+      --texto-apagado:rgba(245,245,245,.32); --borde-rojo:rgba(204,0,0,.28); --borde-blanco:rgba(245,245,245,.1);
+      --fuente-titulo:'Bebas Neue',sans-serif; --fuente-cuerpo:'Barlow',sans-serif; --dorado:#ffd700;
     }
     *{margin:0;padding:0;box-sizing:border-box}
     body{background:var(--negro);color:var(--blanco);font-family:var(--fuente-cuerpo);font-weight:300;min-height:100vh;padding:2rem}
-    .dashboard-header{text-align:center;margin-bottom:3rem}
-    .dashboard-header h1{font-family:var(--fuente-titulo);font-size:4rem;color:var(--blanco)}
+    .dashboard{max-width:1040px;margin:0 auto}
+    .dashboard-header{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin-bottom:3rem;border-bottom:1px solid var(--borde-rojo);padding-bottom:1.5rem}
+    .dashboard-header h1{font-family:var(--fuente-titulo);font-size:clamp(3rem,8vw,5rem);line-height:.95;color:var(--blanco)}
     .dashboard-header h1 .red{color:var(--rojo)}
-    .form-container{max-width:600px;margin:0 auto;background:var(--gris-oscuro);padding:2rem;border:1px solid var(--borde-rojo);border-radius:8px}
-    .form-group{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
-    .form-group label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--texto-apagado);font-weight:400}
-    .form-group input,.form-group select{background:var(--gris-medio);border:1px solid var(--borde-blanco);color:var(--blanco);padding:.85rem 1rem;font-family:var(--fuente-cuerpo);font-size:.9rem;outline:none;transition:border-color var(--trans-rapida)}
-    .form-group input:focus,.form-group select:focus{border-color:var(--rojo)}
-    .form-group select{appearance:none}
-    .drag-drop-area{border:2px dashed var(--borde-blanco);padding:2rem;text-align:center;color:var(--texto-secundario);transition:border-color var(--trans-media);cursor:pointer;margin-bottom:1.5rem}
-    .drag-drop-area.dragover{border-color:var(--rojo)}
-    .drag-drop-area p{margin-bottom:1rem}
-    .file-list{margin-top:1rem;text-align:left}
-    .file-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--borde-blanco)}
-    .thumbnails{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.7rem;margin-top:1rem}
-    .thumb-item{background:var(--gris-medio);border:1px solid var(--borde-blanco);border-radius:6px;overflow:hidden;position:relative;display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.4rem}
-    .thumb-item img{width:100%;height:70px;object-fit:cover;border-radius:4px}
-    .thumb-item .thumb-name{font-size:.65rem;color:var(--texto-secundario);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
-    .progress-container{margin-top:1.2rem;background:var(--gris-medio);border:1px solid var(--borde-blanco);border-radius:6px;overflow:hidden;height:14px}
-    .progress-bar{width:0%;height:100%;background:linear-gradient(90deg,var(--rojo),var(--rojo-brillante));transition:width .2s ease}
-    .status-message{margin-top:1rem;font-size:.9rem;color:var(--rojo);padding:.6rem .8rem;border:1px solid var(--borde-rojo);border-radius:6px;display:none}
-    .btn-primary{display:inline-block;background:var(--rojo);color:var(--blanco);border:none;padding:1rem 2.5rem;font-family:var(--fuente-cuerpo);font-size:.8rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;position:relative;overflow:hidden;cursor:pointer;transition:var(--trans-media);width:100%}
-    .btn-primary::after{content:'';position:absolute;inset:0;background:var(--rojo-brillante);transform:translateX(-101%);transition:transform .3s ease}
-    .btn-primary:hover::after{transform:translateX(0)} .btn-primary span{position:relative;z-index:1}
-
-    /* Estilos para álbumes recientes */
-    .album-item {
-      background: var(--gris-medio);
-      border: 1px solid var(--borde-blanco);
-      border-radius: 6px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    .album-item h4 {
-      color: var(--blanco);
-      margin-bottom: 0.5rem;
-    }
-    .album-item p {
-      color: var(--texto-secundario);
-      margin: 0.25rem 0;
-      font-size: 0.9rem;
-    }
-    .album-item small {
-      color: var(--texto-apagado);
-      font-size: 0.8rem;
+    .dashboard-header p{color:var(--texto-secundario);max-width:420px;line-height:1.6}
+    .actions-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.25rem}
+    .admin-card{display:flex;flex-direction:column;justify-content:space-between;gap:2rem;min-height:230px;background:var(--gris-oscuro);border:1px solid var(--borde-rojo);border-radius:8px;padding:1.6rem;text-decoration:none;color:var(--blanco);transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+    .admin-card:hover{transform:translateY(-4px);border-color:var(--rojo);box-shadow:0 18px 38px rgba(0,0,0,.35)}
+    .admin-card .icon{width:46px;height:46px;border:1px solid var(--borde-blanco);display:flex;align-items:center;justify-content:center;color:var(--dorado);font-size:1.2rem}
+    .admin-card h2{font-family:var(--fuente-titulo);font-size:2rem;letter-spacing:.05em}
+    .admin-card p{color:var(--texto-secundario);line-height:1.55;font-size:.95rem}
+    .admin-card .cta{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dorado)}
+    .status-strip{margin-top:1.25rem;border:1px solid var(--borde-blanco);background:rgba(255,255,255,.03);padding:1rem 1.2rem;color:var(--texto-apagado);font-size:.85rem;line-height:1.5}
+    .top-actions{display:flex;gap:.75rem;flex-wrap:wrap}
+    .small-btn{border:1px solid var(--borde-blanco);background:transparent;color:var(--texto-secundario);padding:.75rem 1rem;text-decoration:none;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+    .small-btn:hover{border-color:var(--rojo);color:var(--blanco)}
+    @media(max-width:760px){
+      body{padding:1.25rem}
+      .dashboard-header{align-items:flex-start;flex-direction:column}
+      .actions-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
-  <div class="dashboard-header">
-    <h1>Internacional<span class="red"> Music</span> Dashboard</h1>
-  </div>
-  <div class="form-container">
-    <form id="albumForm">
-      <div class="form-group">
-        <label for="eventName">Nombre del Evento</label>
-        <input type="text" id="eventName" required>
+  <main class="dashboard">
+    <header class="dashboard-header">
+      <div>
+        <h1>Internacional<span class="red"> Music</span></h1>
+        <p>Panel privado para administrar el contenido visual que se muestra en la pagina publica.</p>
       </div>
-      <div class="form-group">
-        <label for="category">Categoría</label>
-        <select id="category" required>
-          <option value="">Seleccionar Categoría</option>
-          <option value="Boda">Boda</option>
-          <option value="Fiesta">Fiesta</option>
-          <option value="Concierto">Concierto</option>
-          <option value="Evento Corporativo">Evento Corporativo</option>
-          <option value="Otro">Otro</option>
-        </select>
+      <div class="top-actions">
+        <a class="small-btn" href="../index.html">Ver web</a>
+        <button class="small-btn" id="logoutBtn" type="button">Salir</button>
       </div>
-      <div class="form-group">
-        <label for="eventDate">Fecha</label>
-        <input type="date" id="eventDate" required>
-      </div>
-      <div class="drag-drop-area" id="dragDropArea">
-        <p><i class="fas fa-cloud-upload-alt"></i></p>
-        <p>Arrastra y suelta las fotos aquí o haz clic para seleccionar</p>
-        <input type="file" id="fileInput" multiple accept="image/*" style="display:none;">
-      </div>
-      <div class="thumbnails" id="thumbnails"></div>
-      <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-      <div class="status-message" id="statusMessage"></div>
-      <button type="submit" class="btn-primary">Guardar Álbum</button>
-    </form>
-  </div>
+    </header>
 
-  <!-- Recent Albums Section -->
-  <div class="recent-albums-section" style="margin-top: 3rem;">
-    <div id="recent-albums" style="background: var(--gris-oscuro); padding: 2rem; border: 1px solid var(--borde-rojo); border-radius: 8px;">
-      <p>Cargando álbumes recientes...</p>
+    <section class="actions-grid" aria-label="Acciones de administracion">
+      <a class="admin-card" href="https://www.sanity.io/manage/project/xpeoe7sp" target="_blank" rel="noopener noreferrer">
+        <div class="icon"><i class="fas fa-folder-open"></i></div>
+        <div>
+          <h2>Contenido Sanity</h2>
+          <p>Gestiona trabajos del portafolio y carpetas de clientes desde el gestor conectado a la web.</p>
+        </div>
+        <span class="cta">Abrir gestor</span>
+      </a>
+
+      <a class="admin-card" href="https://internacional-music.sanity.studio/" target="_blank" rel="noopener noreferrer">
+        <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+        <div>
+          <h2>Sanity Studio</h2>
+          <p>Acceso directo al Studio desplegado para subir fotos, videos y portadas sin depender del computador local.</p>
+        </div>
+        <span class="cta">Abrir Studio</span>
+      </a>
+    </section>
+
+    <div class="status-strip">
+      Firebase queda activo solo para autenticar esta zona admin. Las fotos, videos, carpetas y trabajos publicados salen de Sanity.
     </div>
-  </div>
+  </main>
 
   <script type="module">
     import '../js/auth-status.js';
-    import { setupAlbumUploader } from '../js/uploader.js';
-    import { db } from '../js/firebase-config.js';
-    import { collection, getDocs, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
+    import { auth } from '../js/firebase-config.js';
+    import { signOut } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js';
 
-    // Setup album uploader
-    setupAlbumUploader();
-
-    // Load recent albums
-    async function loadRecentAlbums() {
-      try {
-        const q = query(collection(db, 'albumes'), orderBy('createdAt', 'desc'), limit(10));
-        const querySnapshot = await getDocs(q);
-
-        const albumsContainer = document.getElementById('recent-albums');
-        if (!albumsContainer) return;
-
-        albumsContainer.innerHTML = '<h3>Álbumes Recientes</h3>';
-
-        if (querySnapshot.empty) {
-          albumsContainer.innerHTML += '<p>No hay álbumes subidos aún.</p>';
-          return;
-        }
-
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const albumDiv = document.createElement('div');
-          albumDiv.className = 'album-item';
-          albumDiv.innerHTML = `
-            <h4>${data.title}</h4>
-            <p>Categoría: ${data.category}</p>
-            <p>Fecha: ${data.date}</p>
-            <p>Fotos: ${data.photos ? data.photos.length : 0}</p>
-            <small>Creado: ${data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</small>
-          `;
-          albumsContainer.appendChild(albumDiv);
-        });
-      } catch (error) {
-        console.error('Error cargando álbumes:', error);
-        const albumsContainer = document.getElementById('recent-albums');
-        if (albumsContainer) {
-          albumsContainer.innerHTML = '<p>Error al cargar álbumes. Revisa la consola para más detalles.</p>';
-        }
-      }
-    }
-
-    // Load albums on page load
-    document.addEventListener('DOMContentLoaded', loadRecentAlbums);
+    const logoutBtn = document.getElementById('logoutBtn');
+    logoutBtn?.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = '../login.html';
+    });
   </script>
 </body>
 </html>

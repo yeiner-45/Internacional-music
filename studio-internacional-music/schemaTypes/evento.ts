@@ -28,12 +28,21 @@ export const evento = defineType({
     }),
     defineField({
       name: 'imagenPrincipal',
-      title: 'Subir Foto',
+      title: 'Foto principal',
       type: 'image',
       options: {
-        hotspot: true, // Esto permite al cliente centrar la cara de la gente en la miniatura
+        hotspot: true,
       },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'videoPrincipal',
+      title: 'Video principal (opcional)',
+      type: 'file',
+      options: {
+        accept: 'video/*',
+      },
+      hidden: ({document}) => document?.categoria !== 'video',
     }),
     defineField({
       name: 'fechaEvento',

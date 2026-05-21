@@ -163,6 +163,18 @@
     .portfolio-item-card:hover .portfolio-item-info{opacity:1}
     .portfolio-item-title{font-family:var(--fuente-titulo);font-size:1.1rem;color:var(--blanco);margin-bottom:.3rem;letter-spacing:.06em}
     .portfolio-item-meta{font-size:.7rem;color:var(--texto-apagado);letter-spacing:.08em}
+    .album-folder-card{border:0;text-align:left;color:inherit;font:inherit;padding:0}
+    .portfolio-play-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--dorado);z-index:1;background:rgba(0,0,0,.18)}
+    .portfolio-empty-state{border:1px solid var(--borde-rojo);background:rgba(10,10,10,.45);color:var(--texto-secundario);padding:1rem 1.2rem;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase}
+    .media-modal{position:fixed;inset:0;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;z-index:10000;backdrop-filter:blur(8px);padding:2rem}
+    .media-modal-inner{position:relative;max-width:92vw;max-height:92vh;display:flex;flex-direction:column;align-items:center;gap:1rem}
+    .media-modal-image{max-width:100%;max-height:82vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .media-modal-video{width:90vw;max-width:1200px;max-height:78vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .media-modal-title{color:var(--dorado);text-align:center;font-family:var(--fuente-titulo);letter-spacing:.08em}
+    .media-modal-close{position:absolute;top:.8rem;right:.8rem;width:40px;height:40px;border-radius:50%;background:var(--rojo);border:none;color:white;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .album-modal-grid{width:min(1120px,90vw);max-height:76vh;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;padding:.25rem}
+    .album-modal-item{position:relative;aspect-ratio:1;border:1px solid var(--borde-blanco);background:var(--gris-oscuro);overflow:hidden;border-radius:8px;padding:0;cursor:pointer}
+    .album-modal-item img,.album-modal-item video{width:100%;height:100%;object-fit:cover}
     
     .folder{background:var(--gris-oscuro);border:1px solid var(--borde-blanco);border-radius:8px;padding:1rem;text-align:center;cursor:pointer;transition:background var(--trans-media)}
     .folder:hover{background:var(--rojo)}
@@ -810,7 +822,7 @@
       </div>
       <!-- Vista de carpetas para clientes -->
       <div class="portfolio-clientes" style="display: none;">
-        <div id="clientes-folders"></div>
+        <div class="portfolio-container" id="clientes-folders"></div>
       </div>
     </div>
   </section>
@@ -996,6 +1008,14 @@ function toggleIntroMute(){
 }
 </script>
 <script>
+function showPortfolioView(filter){
+  var isClientes = filter === 'clientes';
+  document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-section-video').forEach(function(section){
+    section.style.display = isClientes ? 'none' : 'block';
+  });
+  var clientes = document.querySelector('.portfolio-clientes');
+  if(clientes) clientes.style.display = isClientes ? 'block' : 'none';
+}
 function showPage(name){
   var requested = name;
   if(requested==='admin'){
@@ -1024,10 +1044,8 @@ function showPage(name){
   
   // Cargar galería de Sanity cuando se navega al portafolio
   if(requested==='portafolio'){
-    var sections = document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-section-video');
-    sections.forEach(function(section){
-      section.style.display = 'block';
-    });
+    var activeFilter = document.querySelector('.filtro.active');
+    showPortfolioView(activeFilter ? activeFilter.dataset.filter : 'todos');
     if(window.loadEventos){
       window.loadEventos();
     }
@@ -1075,8 +1093,7 @@ document.querySelectorAll('.filtro').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.filtro').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    const f=btn.dataset.filter;
-    document.querySelectorAll('.portfolio-item').forEach(i=>i.classList.toggle('hidden',f!=='todos'&&i.dataset.cat!==f));
+    showPortfolioView(btn.dataset.filter);
   });
 });
 document.querySelectorAll('.tab-row .tab').forEach(tab=>{
@@ -1300,11 +1317,9 @@ window.listUpcomingEvents = listUpcomingEvents;
 document.addEventListener('DOMContentLoaded', () => {
   console.log('[Portfolio] Cargando galería desde Sanity...');
   
-  // Mostrar secciones de portafolio
-  const sections = document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-section-video');
-  sections.forEach(section => {
-    section.style.display = 'block';
-  });
+  if (window.showPortfolioView) {
+    window.showPortfolioView('todos');
+  }
   
   if (window.loadEventos) {
     window.loadEventos();
@@ -1317,13 +1332,10 @@ document.addEventListener('DOMContentLoaded', () => {
 window.addEventListener('load', () => {
   console.log('[Portfolio] Página completamente cargada. Verificando galería...');
   if (typeof window.loadEventos === 'function') {
-    // Mostrar secciones nuevamente por seguridad
-    const sections = document.querySelectorAll('.portfolio-section-dj, .portfolio-section-foto, .portfolio-section-show, .portfolio-section-video');
-    sections.forEach(section => {
-      if (section.style.display === 'none') {
-        section.style.display = 'block';
-      }
-    });
+    if (window.showPortfolioView) {
+      const activeFilter = document.querySelector('.filtro.active');
+      window.showPortfolioView(activeFilter ? activeFilter.dataset.filter : 'todos');
+    }
     window.loadEventos();
   } else {
     console.error('[Portfolio] La función loadEventos no está disponible.');
