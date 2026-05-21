@@ -1313,32 +1313,9 @@ window.loadGapi = loadGapi;
 window.listUpcomingEvents = listUpcomingEvents;
 
 
-// Cargar galería de Sanity automáticamente al abrir la página - PORTAFOLIO PÚBLICO
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('[Portfolio] Cargando galería desde Sanity...');
-  
   if (window.showPortfolioView) {
     window.showPortfolioView('todos');
-  }
-  
-  if (window.loadEventos) {
-    window.loadEventos();
-  } else {
-    console.error('[Portfolio] Función loadEventos no disponible. Verifica sanity-gallery.js');
-  }
-});
-
-// Forzar la carga de eventos de Sanity al iniciar completamente
-window.addEventListener('load', () => {
-  console.log('[Portfolio] Página completamente cargada. Verificando galería...');
-  if (typeof window.loadEventos === 'function') {
-    if (window.showPortfolioView) {
-      const activeFilter = document.querySelector('.filtro.active');
-      window.showPortfolioView(activeFilter ? activeFilter.dataset.filter : 'todos');
-    }
-    window.loadEventos();
-  } else {
-    console.error('[Portfolio] La función loadEventos no está disponible.');
   }
 });
 
