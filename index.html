@@ -606,7 +606,24 @@
     .reservas-fc-form .btn-reservas-fc:hover{
       background:var(--rojo-brillante);border-color:var(--rojo-brillante);box-shadow:0 4px 24px rgba(204,0,0,.25);
     }
+    .reservas-fc-form .btn-reservas-fc[disabled]{
+      opacity:.65;cursor:wait;box-shadow:none;
+    }
     .reservas-fc-form .reservas-fc-hint{font-size:.72rem;color:rgba(245,245,245,.4);margin-top:-.35rem}
+    .reservas-form-status{
+      display:none;border:1px solid var(--borde-blanco);border-left-width:3px;
+      padding:.8rem 1rem;font-size:.85rem;line-height:1.45;letter-spacing:.02em;
+      background:rgba(255,255,255,.035);
+    }
+    .reservas-form-status.is-visible{display:block}
+    .reservas-form-status.is-success{
+      border-color:rgba(0,200,100,.25);border-left-color:var(--estado-exito);
+      color:rgba(245,245,245,.92);background:var(--bg-exito);
+    }
+    .reservas-form-status.is-error{
+      border-color:rgba(255,75,75,.25);border-left-color:var(--estado-error);
+      color:rgba(245,245,245,.92);background:var(--bg-error);
+    }
 
     @media(max-width:900px){
       #navbar{padding:1rem 1.5rem} #navbar ul{gap:1.5rem}
@@ -886,6 +903,7 @@
                 <input type="date" id="reservas-fecha" name="fecha_evento" required>
               </div>
               <button type="submit" class="btn-reservas-fc"><span>Enviar solicitud</span></button>
+              <div class="reservas-form-status" id="reservas-form-status" role="status" aria-live="polite"></div>
             </form>
           </div>
         </div>
@@ -1286,19 +1304,72 @@ document.querySelectorAll('.tab-row .tab').forEach(tab=>{
 
     var form = document.getElementById('form-reservas-fc');
     if (form) {
-      form.addEventListener('submit', function(e){
+      var submitButton = form.querySelector('button[type="submit"]');
+      var submitButtonText = submitButton ? submitButton.querySelector('span') : null;
+      var statusBox = document.getElementById('reservas-form-status');
+
+      function setFormStatus(type, message) {
+        if (!statusBox) return;
+        statusBox.textContent = message;
+        statusBox.className = 'reservas-form-status is-visible is-' + type;
+      }
+
+      function clearFormStatus() {
+        if (!statusBox) return;
+        statusBox.textContent = '';
+        statusBox.className = 'reservas-form-status';
+      }
+
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+
         var vis = document.getElementById('reservas-whatsapp-visible');
         var hid = document.getElementById('reservas-whatsapp-hidden');
         if (!vis || !hid) return;
+
+        clearFormStatus();
+
         var digits = vis.value.replace(/\D/g, '');
         if (digits.indexOf('57') === 0) digits = digits.substring(2);
         if (digits.length < 10) {
-          e.preventDefault();
-          alert('Introduce un número de celular válido (10 dígitos después de +57).');
+          setFormStatus('error', 'Introduce un numero de celular valido de 10 digitos despues de +57.');
           vis.focus();
           return;
         }
         hid.value = '+57' + digits;
+
+        if (submitButton) submitButton.disabled = true;
+        if (submitButtonText) submitButtonText.textContent = 'Enviando...';
+
+        try {
+          var response = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error('Formspree response was not ok');
+          }
+
+          form.reset();
+          hid.value = '';
+          if (fechaInput) {
+            fechaInput.min = new Date().toISOString().split('T')[0];
+          }
+          try {
+            calendar.unselect();
+          } catch (err) {}
+          setFormStatus('success', 'Solicitud enviada correctamente. Te contactaremos por WhatsApp en menos de 24 horas.');
+        } catch (err) {
+          console.error('Error enviando reserva:', err);
+          setFormStatus('error', 'No pudimos enviar la solicitud en este momento. Intenta de nuevo o escribenos por WhatsApp.');
+        } finally {
+          if (submitButton) submitButton.disabled = false;
+          if (submitButtonText) submitButtonText.textContent = 'Enviar solicitud';
+        }
       });
     }
   });
